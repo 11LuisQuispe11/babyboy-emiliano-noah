@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env*
+!.env.example
+.preview-chrome/
+.publish-repo/
+*.log
+scene-*.png
+/*.glb
+/public/models/Barbara.glb
+/public/models/Escenario.glb
