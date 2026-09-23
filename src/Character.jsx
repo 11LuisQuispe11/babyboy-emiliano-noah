@@ -15,7 +15,7 @@ export default function Character({ path, character, actionName, traveling, faci
     const { clips, stride } = prepareCharacterClips(source.animations, character, character === 'barbara' ? 0.22 : 0.24)
     const mixer = new AnimationMixer(scene)
     const actions = clips.map(clip => mixer.clipAction(clip))
-    const idle = clips.findIndex(c => c.name === 'Relaxed Idle')
+    const idle = clips.findIndex(c => c.name === 'Idle')
     return { scene, mixer, actions, clips, stride, idle, selected: idle, weights: clips.map((_, i) => i === idle ? 1 : 0) }
   }, [source.scene, source.animations, character])
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function Character({ path, character, actionName, traveling, faci
     const index = rig.clips.findIndex(c => c.name === actionName)
     rig.selected = index < 0 ? rig.idle : index
     const action = rig.actions[rig.selected]
-    const repeating = /Idle|Walking|Dance/.test(action.getClip().name)
+    const repeating = /Idle|Walking|Dance|Excited/.test(action.getClip().name)
     if (rig.weights[rig.selected] < 0.01 || action.time >= action.getClip().duration) action.reset()
     action.setLoop(repeating ? LoopRepeat : LoopOnce, Infinity)
     action.clampWhenFinished = true

@@ -75,3 +75,10 @@ Se inspeccionaron los 14 clips de cada personaje y sus transformaciones de cader
 Las mezclas mantienen peso total 1 incluso ante selecciones rapidas. Se limita el salto temporal al volver de otra pestana. No se modifican los modelos originales. La mejora por codigo no sustituye una limpieza artistica del rig si se busca realismo de captura profesional.
 
 Programa: instruccion visible para tocar los eventos, acciones Descubrir / Viendo ahora, foco de teclado y respuesta al pulsar. Se conserva la cuadricula movil y el espacio inferior para los personajes.
+
+
+## Ajuste solicitado: Idle original y portada
+
+Se reemplaza la seleccion anterior de reposo por el clip Idle original en ambos modelos, sin modificar sus pistas. Los textos de bienvenida tampoco activan Talking ni Talking_Gesture. Walking conserva su ancla, cadencia y reloj; el giro conserva su interpolacion.
+
+El evento de las 6 utiliza Excited (Barbara) y ExcitedAmazing (Luis, nombre disponible en su archivo), con ciclo continuo y correccion de deriva. La tipografia principal movil sube 2 px, incluyendo programa, informacion, regalos y asistencia. La portada de carga utiliza composicion tipografica, monograma y orbita CSS, progreso real, recuperacion ante errores y soporte de movimiento reducido.

@@ -4,7 +4,7 @@ export const GARDEN_PROGRAM = [
   { time: '3:00 p. m.', title: 'Recepción y fotos', description: 'Recibimos a nuestros invitados y guardamos las primeras fotos de esta tarde especial.', barbara: 'Waving', luis: 'Standing Greeting' },
   { time: '3:30 p. m.', title: 'Show de babyshower', description: '¡Comienza el show! Un momento para compartir, reír y celebrar juntos a Emiliano Noah.', barbara: 'Step Hip Hop Dance', luis: 'Step Hip Hop Dance' },
   { time: '5:00 p. m.', title: 'Regalos con baile', description: 'La entrega de regalos llega con un paso de baile de cada invitado. ¡Prepara el tuyo!', barbara: 'Thankful', luis: 'Step Hip Hop Dance' },
-  { time: '6:00 p. m.', title: '¡Todos a bailar!', description: 'Música para bailar, divertirnos y seguir disfrutando juntos.', barbara: 'Step Hip Hop Dance', luis: 'Step Hip Hop Dance' },
+  { time: '6:00 p. m.', title: '¡Todos a bailar!', description: 'Música para bailar, divertirnos y seguir disfrutando juntos.', barbara: 'Excited', luis: 'ExcitedAmazing' },
 ]
 
 export default function GardenActivities({ selected, onSelect, onGifts }) {

@@ -44,17 +44,17 @@ function getDialogue(guestName) {
     },
     {
       speaker: 'BARBARA',
-      action: 'Talking',
+      action: 'Idle',
       text: 'Estamos preparando una reunión llena de cariño para celebrar la llegada de nuestro pequeño hijo Emiliano Noah.',
     },
     {
       speaker: 'LUIS',
-      action: 'Talking_gesture',
+      action: 'Idle',
       text: 'Tu compañía hará que este momento sea todavía más especial. Queremos verte allí con nosotros.',
     },
     {
       speaker: 'BARBARA',
-      action: 'Talking_Gesture',
+      action: 'Idle',
       text: 'Cuando quieras, acompáñanos para conocer la fecha, el lugar y todos los detalles. ¡Esperamos contar contigo!',
     },
   ]
@@ -161,26 +161,26 @@ function ExploreCamera({ active, joystick }) {
 }
 
 function IntroScreen({ onComplete }) {
-  const { active, progress } = useProgress()
-
+  const { active, progress, errors } = useProgress()
+  const ready = !active && progress >= 100 && errors.length === 0
   useEffect(() => {
-    if (active || progress < 100) return undefined
-    const timer = window.setTimeout(onComplete, 3600)
+    if (!ready) return undefined
+    const timer = window.setTimeout(onComplete, 1600)
     return () => window.clearTimeout(timer)
-  }, [active, onComplete, progress])
-
+  }, [ready, onComplete])
   return (
-    <section className="intro-screen" aria-label="Introducción de la invitación">
-      <div className="intro-cloud intro-cloud-one" />
-      <div className="intro-cloud intro-cloud-two" />
-      <div className="intro-cloud intro-cloud-three" />
+    <section className={`intro-screen invitation-loading${ready ? ' is-ready' : ''}`} aria-label="Preparando tu invitación">
+      <div className="loading-halo" aria-hidden="true" />
       <div className="intro-content">
-        <p className="intro-kicker">UNA INVITACIÓN ESPECIAL</p>
-        <h1>Emiliano Noah</h1>
-        <p className="intro-caption">Cargando la bienvenida...</p>
-        <div className="intro-progress" aria-label={`Cargando ${Math.round(progress)} por ciento`}>
-          <span style={{ width: `${Math.max(progress, 8)}%` }} />
-        </div>
+        <p className="intro-kicker">UNA PEQUEÑA VIDA. UN AMOR INMENSO.</p>
+        <div className="loading-emblem" aria-hidden="true"><span className="loading-orbit" /><span className="loading-star">✦</span><span className="loading-monogram">en</span><span className="loading-spark">✧</span></div>
+        <p className="loading-dedication">Algo hermoso está por comenzar</p>
+        <h1>Emiliano<span>Noah</span></h1>
+        <p className="loading-signature">Con amor, Barbara y Luis</p>
+        <div className="loading-status" role="status">{errors.length ? 'No pudimos preparar la invitación. Intenta nuevamente.' : ready ? 'Todo listo. Bienvenido a nuestra historia.' : 'Estamos preparando un lugar para ti…'}</div>
+        <div className="intro-progress" role="progressbar" aria-label="Carga de la invitación" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}><span style={{ width: `${progress}%` }} /></div>
+        {errors.length > 0 && <button className="loading-retry" onClick={() => window.location.reload()}>Volver a intentar</button>}
+        <p className="loading-footer">UN DÍA PARA COMPARTIR · UN RECUERDO PARA SIEMPRE</p>
       </div>
     </section>
   )
@@ -205,7 +205,7 @@ function WelcomeSequence({ guestName, onActionChange, onContinue, leaving }) {
       setRevealedText(dialogue.text.slice(0, characterIndex))
       if (characterIndex >= dialogue.text.length) {
         window.clearInterval(typewriter)
-        onActionChange(dialogue.speaker, 'Relaxed Idle')
+        onActionChange(dialogue.speaker, 'Idle')
         nextDialogueTimer = window.setTimeout(() => {
           if (dialogueIndex >= dialogueLines.length - 1) {
             setReadyToWalk(true)
@@ -308,16 +308,16 @@ export default function App() {
   const [danceLuis, setDanceLuis] = useState(false)
   const [joystick, setJoystick] = useState({ x: 0, y: 0 })
   const [barbaraAction, setBarbaraAction] = useState('Standing Greeting')
-  const [luisAction, setLuisAction] = useState('Relaxed Idle')
+  const [luisAction, setLuisAction] = useState('Idle')
 
   const handleDialogueAction = useCallback((speaker, action) => {
     if (speaker === 'BARBARA') {
       setBarbaraAction(action)
-      setLuisAction('Relaxed Idle')
+      setLuisAction('Idle')
       return
     }
 
-    setBarbaraAction('Relaxed Idle')
+    setBarbaraAction('Idle')
     setLuisAction(action)
   }, [])
 
@@ -355,13 +355,13 @@ export default function App() {
         <Suspense fallback={null}>
           <Scenario />
           <Character path={BARBARA_PATH} character="barbara"
-            actionName={exploring ? (danceBarbara ? 'Step Hip Hop Dance' : 'Relaxed Idle') : gardenPhase !== 'idle' ? (gardenPhase === 'ready' ? GARDEN_PROGRAM[selectedActivity].barbara : 'Relaxed Idle') : routePhase === 'turning-away' || routePhase === 'turning-arrival' ? 'Relaxed Idle' : routePhase === 'walking' ? 'Walking' : routePhase === 'arrived' && infoScene === 'details' ? 'Relaxed Idle' : barbaraAction}
+            actionName={exploring ? (danceBarbara ? 'Step Hip Hop Dance' : 'Idle') : gardenPhase !== 'idle' ? (gardenPhase === 'ready' ? GARDEN_PROGRAM[selectedActivity].barbara : 'Idle') : routePhase === 'turning-away' || routePhase === 'turning-arrival' ? 'Idle' : routePhase === 'walking' ? 'Walking' : routePhase === 'arrived' && infoScene === 'details' ? 'Idle' : barbaraAction}
             traveling={routePhase !== 'idle'}
             facingBack={routePhase === 'turning-away' || routePhase === 'walking'}
             walkProgress={walkProgress} gardenPhase={gardenPhase} gardenProgress={gardenProgress}
           />
           <Character path={LUIS_PATH} character="luis"
-            actionName={exploring ? (danceLuis ? 'Step Hip Hop Dance' : 'Relaxed Idle') : gardenPhase !== 'idle' ? (gardenPhase === 'ready' ? GARDEN_PROGRAM[selectedActivity].luis : 'Relaxed Idle') : routePhase === 'turning-away' || routePhase === 'turning-arrival' ? 'Relaxed Idle' : routePhase === 'walking' ? 'Walking' : routePhase === 'arrived' && infoScene === 'details' ? 'Relaxed Idle' : luisAction}
+            actionName={exploring ? (danceLuis ? 'Step Hip Hop Dance' : 'Idle') : gardenPhase !== 'idle' ? (gardenPhase === 'ready' ? GARDEN_PROGRAM[selectedActivity].luis : 'Idle') : routePhase === 'turning-away' || routePhase === 'turning-arrival' ? 'Idle' : routePhase === 'walking' ? 'Walking' : routePhase === 'arrived' && infoScene === 'details' ? 'Idle' : luisAction}
             traveling={routePhase !== 'idle'}
             facingBack={routePhase === 'turning-away' || routePhase === 'walking'}
             walkProgress={walkProgress} gardenPhase={gardenPhase} gardenProgress={gardenProgress}

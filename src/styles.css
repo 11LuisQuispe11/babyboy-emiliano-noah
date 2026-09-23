@@ -411,3 +411,49 @@ button:focus-visible, a:focus-visible { outline: 3px solid #29483e; outline-offs
   .garden-instruction { font-size: 11px; padding: 8px 10px; margin-bottom: 8px; }
 }
 @media (prefers-reduced-motion: reduce) { .garden-slot { transition: none; } }
+
+/* A lightweight invitation cover; only opacity and transforms animate. */
+.invitation-loading { background: #f6f2e8; overflow: auto; padding: 32px 24px; color: #29483e; }
+.invitation-loading::after { display: none; }
+.loading-halo { position: absolute; width: min(90vw, 700px); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, #d6e4d7 0%, #e7ecdc 45%, transparent 70%); pointer-events: none; }
+.invitation-loading .intro-content { width: min(100%, 560px); }
+.invitation-loading .intro-kicker { color: #526d5e; font-size: 11px; letter-spacing: .16em; line-height: 1.7; }
+.loading-emblem { position: relative; display: grid; place-items: center; width: 108px; height: 108px; margin: 30px auto 24px; }
+.loading-orbit { position: absolute; inset: 0; border: 1px solid #9eaf90; border-radius: 50%; border-top-color: transparent; animation: loading-orbit 12s linear infinite; }
+.loading-monogram { font: italic 48px Georgia, serif; letter-spacing: -.12em; padding-right: 7px; }
+.loading-star { position: absolute; right: -5px; top: 8px; color: #8a743c; font-size: 27px; }
+.loading-spark { position: absolute; left: 0; bottom: 0; color: #8a743c; font-size: 23px; }
+.loading-dedication { font-size: 14px; color: #526d5e; margin: 0 0 16px; }
+.invitation-loading h1 { font: 500 clamp(54px, 8vw, 88px)/.95 Georgia, serif; letter-spacing: -.055em; color: #29483e; }
+.invitation-loading h1 span { display: block; font-style: italic; }
+.loading-signature { margin: 20px 0 34px; font-size: 13px; color: #526d5e; }
+.loading-status { font-size: 13px; line-height: 1.5; min-height: 40px; }
+.invitation-loading .intro-progress { height: 4px; width: min(250px, 75%); border-radius: 10px; background: #d9dfce; margin-top: 8px; }
+.invitation-loading .intro-progress span { border-radius: inherit; background: #647c59; }
+.loading-footer { margin: 32px auto 0; max-width: 290px; color: #526d5e; font: 10px/1.8 'DM Mono', monospace; letter-spacing: .12em; }
+.loading-retry { margin-top: 16px; padding: 12px 20px; background: #29483e; color: #fff; border: 0; border-radius: 24px; cursor: pointer; }
+.is-ready .loading-orbit { animation-play-state: paused; border-color: #647c59; }
+@keyframes loading-orbit { to { transform: rotate(360deg); } }
+@media (max-width: 640px) {
+  .invitation-loading .intro-kicker { font-size: 13px; }
+  .loading-dedication { font-size: 16px; }
+  .loading-status, .loading-signature { font-size: 15px; }
+  .loading-footer { font-size: 12px; }
+  .thought-text { font-size: 16px; }
+  .thought-name { font-size: 13px; }
+  .welcome-hint, .welcome-skip { font-size: 14px; }
+  .event-heading h1, .garden-heading h1 { font-size: 26px; }
+  .event-heading p, .garden-heading > p { font-size: 11px; }
+  .event-label { font-size: 11px; }
+  .event-card strong { font-size: 19px; }
+  .event-card p { font-size: 13px; }
+  .event-card .map-link { font-size: 12px; }
+  .garden-slot strong { font-size: 14px; }
+  .garden-slot > .garden-slot-time, .garden-slot .garden-slot-action { font-size: 12px; }
+  .garden-instruction, .garden-activity p, .garden-refreshments { font-size: 13px; }
+  .garden-refreshments strong { font-size: 14px; }
+  .garden-heading { padding-right: 42px; }
+  .scene-next { font-size: 16px; }
+}
+@media (max-height: 650px) { .loading-emblem { margin: 12px auto; width: 76px; height: 76px; } .loading-signature { margin: 14px 0; } .loading-footer { margin-top: 16px; } }
+@media (prefers-reduced-motion: reduce) { .loading-orbit { animation: none; } }

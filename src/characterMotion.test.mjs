@@ -28,10 +28,11 @@ for(const [character,file,scale] of [['barbara','Barbara_TEST_14AnimacionesV2.gl
   const originals=animations.map(c=>c.tracks.map(t=>Array.from(t.values)))
   const {clips,stride}=prepareCharacterClips(animations,character,scale)
   assert.ok(stride>1&&stride<2)
+  assert.deepEqual(clips.find(c=>c.name==='Idle').tracks.map(t=>Array.from(t.values)), originals[animations.findIndex(c=>c.name==='Idle')])
   for(const clip of clips) {
    for(const track of clip.tracks) assert.ok(track.values.every(Number.isFinite))
    const hips=clip.tracks.find(t=>/Hips.position$/.test(t.name))
-   if(/Walking|Dance|Idle/.test(clip.name)) {
+   if(/Walking|Dance|Excited/.test(clip.name)) {
     for(let k=0;k<3;k++) assert.ok(Math.abs(hips.values[k]-hips.values[hips.values.length-3+k])<1e-5)
    }
   }

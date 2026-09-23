@@ -93,3 +93,17 @@
 .garden-play-controls button[aria-pressed="true"] { background: #29483e; color: #fffdf6; }
 .garden-play-controls button:last-child { background: #e3e9d2; }
 @media(max-width:640px) { .garden-invitation { flex-direction: column; align-items: stretch; } .registry-screen .visit-garden { width: 100%; } .attendance-card { padding: 22px; } .attendance-card h1 { font-size: 34px; } .garden-play-controls { right: 12px; max-width: calc(100% - 135px); } }
+@media (max-width:640px) {
+ .registry-header h1 { font-size: 38px; }
+ .registry-intro, .registry-info, .registry-error, .registry-success, .registry-footer p, .garden-invitation p { font-size: 14px; }
+ .registry-card h2 { font-size: 19px; }
+ .registry-card-actions a, .registry-card-actions button, .registry-filters button, .registry-nav button { font-size: 13px; }
+ .registry-card.is-purchased .registry-card-actions button { font-size: 12px; }
+ .registry-badge { font-size: 11px; }
+ .registry-search input { font-size: 16px; }
+ .registry-eyebrow, .registry-nav > span { font-size: 10px; }
+ .registry-sync, .registry-filters button span { font-size: 12px; }
+ .attendance-card h1 { font-size: 36px; }
+ .attendance-card > p, .attendance-card label, .attendance-card input, .attendance-card select { font-size: 16px; }
+ .attendance-card small, .garden-play-controls button { font-size: 14px; }
+}
