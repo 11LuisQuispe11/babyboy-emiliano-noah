@@ -1,0 +1,53 @@
+import { useEffect, useMemo, useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
+import { useGLTF } from '@react-three/drei'
+import { AnimationMixer, LoopOnce, LoopRepeat } from 'three'
+import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js'
+import { prepareCharacterClips, blendWeights } from './characterMotion.mjs'
+import { WALK_DURATION_MS, dampingAmount } from './sceneMotion.mjs'
+import { GARDEN_POSITIONS, hostsInGarden } from './gardenMotion.mjs'
+
+export default function Character({ path, character, actionName, traveling, facingBack, walkProgress, gardenPhase, gardenProgress }) {
+  const source = useGLTF(path)
+  const group = useRef()
+  const rig = useMemo(() => {
+    const scene = clone(source.scene)
+    const { clips, stride } = prepareCharacterClips(source.animations, character, character === 'barbara' ? 0.22 : 0.24)
+    const mixer = new AnimationMixer(scene)
+    const actions = clips.map(clip => mixer.clipAction(clip))
+    const idle = clips.findIndex(c => c.name === 'Relaxed Idle')
+    return { scene, mixer, actions, clips, stride, idle, selected: idle, weights: clips.map((_, i) => i === idle ? 1 : 0) }
+  }, [source.scene, source.animations, character])
+  useEffect(() => {
+    rig.actions[rig.idle].play()
+    const index = rig.clips.findIndex(c => c.name === actionName)
+    rig.selected = index < 0 ? rig.idle : index
+    const action = rig.actions[rig.selected]
+    const repeating = /Idle|Walking|Dance/.test(action.getClip().name)
+    if (rig.weights[rig.selected] < 0.01 || action.time >= action.getClip().duration) action.reset()
+    action.setLoop(repeating ? LoopRepeat : LoopOnce, Infinity)
+    action.clampWhenFinished = true
+    action.timeScale = actionName === 'Walking' ? (17 / (WALK_DURATION_MS / 1000)) * action.getClip().duration / rig.stride : /Idle/.test(actionName) ? 0.8 : /Dance/.test(actionName) ? 0.9 : 0.85
+    action.play()
+  }, [actionName, rig])
+  useEffect(() => () => { rig.mixer.stopAllAction() }, [rig])
+  useFrame((_, delta) => {
+    const dt = Math.min(delta, 0.05)
+    const active = rig.actions[rig.selected]
+    if (active.loop === LoopOnce && active.time >= active.getClip().duration) {
+      rig.selected = rig.idle
+      rig.actions[rig.idle].play()
+    }
+    rig.weights = blendWeights(rig.weights, rig.selected, dt)
+    rig.actions.forEach((action, index) => action.setEffectiveWeight(rig.weights[index]))
+    rig.mixer.update(dt)
+    const progress = traveling ? walkProgress.current : 0
+    const startX = character === 'barbara' ? -0.38 : 0.38
+    const position = hostsInGarden(gardenPhase, gardenProgress.current) ? GARDEN_POSITIONS[character] : [startX, 0.18, 17 * (1 - progress)]
+    group.current.position.set(...position)
+    const target = facingBack ? Math.PI : 0
+    const difference = Math.atan2(Math.sin(target - group.current.rotation.y), Math.cos(target - group.current.rotation.y))
+    group.current.rotation.y += difference * dampingAmount(dt, 3.8)
+  })
+  return <group ref={group}><primitive object={rig.scene} /></group>
+}

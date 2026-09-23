@@ -23,7 +23,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: node --test src/sceneMotion.test.mjs src/gardenMotion.test.mjs
+      - run: node --test src/*.test.mjs
       - run: cp .env.example .env.production
       - run: npm run build
       - uses: actions/configure-pages@v5

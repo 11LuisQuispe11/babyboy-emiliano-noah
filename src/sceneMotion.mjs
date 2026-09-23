@@ -1,4 +1,4 @@
-export const WALK_DURATION_MS = 7200
+export const WALK_DURATION_MS = 14000
 
 export function getRouteShot(phase, progress = 0, portrait = false) {
   const p = phase === 'arrived' || phase === 'turning-arrival'

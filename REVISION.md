@@ -59,3 +59,19 @@ Validación: siete pruebas automáticas de cámara correctas, incluyendo continu
 
 Para validar la transición: http://127.0.0.1:5173/?escena=2 y pulsar Continuar.
 Vista directa de escena tres, solo en desarrollo: http://127.0.0.1:5173/?escena=3
+
+## Revision de movimiento y programa (22 septiembre 2026)
+
+Se inspeccionaron los 14 clips de cada personaje y sus transformaciones de cadera y cabeza. Los GLB usan Z local vertical e Y local hacia delante.
+
+- Walking: desplazamiento exportado de 1.30 m por ciclo en Barbara y 1.76 m en Luis. Se elimina el avance interno y se calcula la cadencia individual para recorrer 17 m en 14 s.
+- Turning: dura 4.1 s y baja la cabeza (Barbara hasta 1.34 m frente a 1.41 m en Waving). Se sustituye por rotacion del contenedor sobre reposo estable.
+- Idle / Breathing Idle / Happy Idle: se elige Idle para Luis. En Barbara se conserva respiracion reducida al 22% con piernas y torso referenciados a Waving, mas erguido que su Idle original.
+- Waving / Standing Greeting: saludos una sola vez, despues reposo.
+- Talking / Talking_Gesture / Talking_gesture / Pointing / Thankful / Clapping: gestos con base inferior estable; se conservan las expresiones superiores y vuelven al reposo al terminar. Pointing deja de repetirse durante toda la escena informativa.
+- Step Hip Hop Dance: mantiene flexion intencional de baile, elimina deriva horizontal acumulada y cierra el ciclo. Velocidad 90%.
+- Happy / Excited / ExcitedAmazing: inspeccionados; no se seleccionan para el reposo por su variacion de postura y desplazamiento.
+
+Las mezclas mantienen peso total 1 incluso ante selecciones rapidas. Se limita el salto temporal al volver de otra pestana. No se modifican los modelos originales. La mejora por codigo no sustituye una limpieza artistica del rig si se busca realismo de captura profesional.
+
+Programa: instruccion visible para tocar los eventos, acciones Descubrir / Viendo ahora, foco de teclado y respuesta al pulsar. Se conserva la cuadricula movil y el espacio inferior para los personajes.

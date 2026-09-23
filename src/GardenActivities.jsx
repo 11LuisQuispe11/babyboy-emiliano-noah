@@ -18,10 +18,11 @@ export default function GardenActivities({ selected, onSelect, onGifts }) {
           <p>EN EL JARDÍN · CON USTEDES</p>
           <h1 id="garden-heading" tabIndex={-1} ref={heading}>Una tarde para recordar</h1>
         </header>
+        <p className="garden-instruction">Toca un evento y descubre qué haremos <span aria-hidden="true">↓</span></p>
         <div className="garden-schedule" aria-label="Programa del evento">
           {GARDEN_PROGRAM.map((item, index) => (
             <button key={item.time} type="button" className={`garden-slot${selected === index ? ' is-selected' : ''}`} aria-pressed={selected === index} aria-controls="garden-activity" onClick={() => onSelect(index)}>
-              <span>{item.time}</span><strong>{item.title}</strong>
+              <span className="garden-slot-time">{item.time}</span><strong>{item.title}</strong><span className="garden-slot-action">{selected === index ? 'Viendo ahora ✓' : 'Descubrir →'}</span>
             </button>
           ))}
         </div>

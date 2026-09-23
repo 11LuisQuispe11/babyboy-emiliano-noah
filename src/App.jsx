@@ -1,8 +1,9 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Environment, useAnimations, useGLTF, useProgress } from '@react-three/drei'
+import { Environment, useGLTF, useProgress } from '@react-three/drei'
 
 import { Vector3 } from 'three'
+import Character from './Character.jsx'
 import { dampingAmount, getRouteShot, WALK_DURATION_MS } from './sceneMotion.mjs'
 
 import { invitationName } from './invitationName.mjs'
@@ -101,94 +102,13 @@ function Scenario() {
   return <primitive object={scene} />
 }
 
-function Barbara({ actionName, traveling, facingBack, walkProgress, gardenPhase, gardenProgress }) {
-  const group = useRef()
-  const model = useRef()
-  const { scene, animations } = useGLTF(BARBARA_PATH)
-  const { actions } = useAnimations(animations, group)
-
+function RouteProgress({ routePhase, walkProgress, onArrive }) {
   useFrame((_, delta) => {
-    if (!model.current) return
-    const progress = traveling ? walkProgress.current : 0
-    const target = [
-      BARBARA_START_POSITION[0] + (BARBARA_ENTRY_POSITION[0] - BARBARA_START_POSITION[0]) * progress,
-      BARBARA_START_POSITION[1] + (BARBARA_ENTRY_POSITION[1] - BARBARA_START_POSITION[1]) * progress,
-      BARBARA_START_POSITION[2] + (BARBARA_ENTRY_POSITION[2] - BARBARA_START_POSITION[2]) * progress,
-    ]
-    if (hostsInGarden(gardenPhase, gardenProgress.current)) {
-      const gardenTarget = GARDEN_POSITIONS.barbara
-      target.splice(0, 3, ...gardenTarget)
-    }
-    model.current.position.x = target[0]
-    model.current.position.y = target[1]
-    model.current.position.z = target[2]
-    const targetRotation = facingBack ? Math.PI : 0
-    let rotationDelta = targetRotation - model.current.rotation.y
-    rotationDelta = Math.atan2(Math.sin(rotationDelta), Math.cos(rotationDelta))
-    model.current.rotation.y += rotationDelta * Math.min(1, delta * 2.2)
-  })
-
-  useEffect(() => {
-    const action = actions[actionName]
-    if (!action) {
-      console.warn(`No existe la animación: ${actionName}`)
-      return undefined
-    }
-
-    action.reset().fadeIn(0.35).play()
-    return () => action.fadeOut(0.35)
-  }, [actionName, actions])
-
-  return (
-    <group ref={group}>
-      <primitive ref={model} object={scene} position={BARBARA_START_POSITION} />
-    </group>
-  )
-}
-
-function Luis({ actionName, traveling, facingBack, walkProgress, gardenPhase, gardenProgress }) {
-  const group = useRef()
-  const model = useRef()
-  const { scene, animations } = useGLTF(LUIS_PATH)
-  const { actions } = useAnimations(animations, group)
-
-  useFrame((_, delta) => {
-    if (!model.current) return
-    const progress = traveling ? walkProgress.current : 0
-    const target = [
-      LUIS_START_POSITION[0] + (LUIS_ENTRY_POSITION[0] - LUIS_START_POSITION[0]) * progress,
-      LUIS_START_POSITION[1] + (LUIS_ENTRY_POSITION[1] - LUIS_START_POSITION[1]) * progress,
-      LUIS_START_POSITION[2] + (LUIS_ENTRY_POSITION[2] - LUIS_START_POSITION[2]) * progress,
-    ]
-    if (hostsInGarden(gardenPhase, gardenProgress.current)) {
-      const gardenTarget = GARDEN_POSITIONS.luis
-      target.splice(0, 3, ...gardenTarget)
-    }
-    model.current.position.x = target[0]
-    model.current.position.y = target[1]
-    model.current.position.z = target[2]
-    const targetRotation = facingBack ? Math.PI : 0
-    let rotationDelta = targetRotation - model.current.rotation.y
-    rotationDelta = Math.atan2(Math.sin(rotationDelta), Math.cos(rotationDelta))
-    model.current.rotation.y += rotationDelta * Math.min(1, delta * 2.2)
-  })
-
-  useEffect(() => {
-    const action = actions[actionName]
-    if (!action) {
-      console.warn(`No existe la animación de Luis: ${actionName}`)
-      return undefined
-    }
-
-    action.reset().fadeIn(0.35).play()
-    return () => action.fadeOut(0.35)
-  }, [actionName, actions])
-
-  return (
-    <group ref={group}>
-      <primitive ref={model} object={scene} position={LUIS_START_POSITION} />
-    </group>
-  )
+    if (routePhase !== 'walking') return
+    walkProgress.current = Math.min(1, walkProgress.current + Math.min(delta, 0.05) * 1000 / WALK_DURATION_MS)
+    if (walkProgress.current >= 1) onArrive('turning-arrival')
+  }, -1)
+  return null
 }
 
 function CameraTransition({ routePhase, walkProgress, exploring, gardenPhase, gardenProgress, onGardenPhase }) {
@@ -285,7 +205,7 @@ function WelcomeSequence({ guestName, onActionChange, onContinue, leaving }) {
       setRevealedText(dialogue.text.slice(0, characterIndex))
       if (characterIndex >= dialogue.text.length) {
         window.clearInterval(typewriter)
-        onActionChange(dialogue.speaker, 'Breathing Idle')
+        onActionChange(dialogue.speaker, 'Relaxed Idle')
         nextDialogueTimer = window.setTimeout(() => {
           if (dialogueIndex >= dialogueLines.length - 1) {
             setReadyToWalk(true)
@@ -388,16 +308,16 @@ export default function App() {
   const [danceLuis, setDanceLuis] = useState(false)
   const [joystick, setJoystick] = useState({ x: 0, y: 0 })
   const [barbaraAction, setBarbaraAction] = useState('Standing Greeting')
-  const [luisAction, setLuisAction] = useState('Breathing Idle')
+  const [luisAction, setLuisAction] = useState('Relaxed Idle')
 
   const handleDialogueAction = useCallback((speaker, action) => {
     if (speaker === 'BARBARA') {
       setBarbaraAction(action)
-      setLuisAction('Breathing Idle')
+      setLuisAction('Relaxed Idle')
       return
     }
 
-    setBarbaraAction('Breathing Idle')
+    setBarbaraAction('Relaxed Idle')
     setLuisAction(action)
   }, [])
 
@@ -424,43 +344,24 @@ export default function App() {
     return undefined
   }, [routePhase])
 
-  useEffect(() => {
-    if (routePhase !== 'walking') return undefined
-    let frame
-    let previousTime
-    let elapsed = 0
-    walkProgress.current = 0
-    const updateProgress = (time) => {
-      // Cap background-tab gaps so returning never teleports the characters.
-      if (previousTime !== undefined) elapsed += Math.min(time - previousTime, 50)
-      previousTime = time
-      walkProgress.current = Math.min(1, elapsed / WALK_DURATION_MS)
-      if (walkProgress.current < 1) {
-        frame = requestAnimationFrame(updateProgress)
-      } else {
-        setRoutePhase('turning-arrival')
-      }
-    }
-    frame = requestAnimationFrame(updateProgress)
-    return () => cancelAnimationFrame(frame)
-  }, [routePhase])
 
   return (
     <main className="app-shell" data-garden-phase={gardenPhase}>
       <BackgroundMusic />
       <Canvas dpr={[1, 1.5]} camera={{ position: INITIAL_SHOT.position, fov: INITIAL_SHOT.fov, near: 0.1, far: 180 }}>
+        <RouteProgress routePhase={routePhase} walkProgress={walkProgress} onArrive={setRoutePhase} />
         <ambientLight intensity={0.65} />
         <directionalLight position={[4, 6, 4]} intensity={0.9} />
         <Suspense fallback={null}>
           <Scenario />
-          <Barbara
-            actionName={exploring ? (danceBarbara ? 'Step Hip Hop Dance' : 'Breathing Idle') : gardenPhase !== 'idle' ? GARDEN_PROGRAM[selectedActivity].barbara : routePhase === 'turning-away' || routePhase === 'turning-arrival' ? 'Turning' : routePhase === 'walking' ? 'Walking' : routePhase === 'arrived' && infoScene === 'details' ? 'Pointing' : barbaraAction}
+          <Character path={BARBARA_PATH} character="barbara"
+            actionName={exploring ? (danceBarbara ? 'Step Hip Hop Dance' : 'Relaxed Idle') : gardenPhase !== 'idle' ? (gardenPhase === 'ready' ? GARDEN_PROGRAM[selectedActivity].barbara : 'Relaxed Idle') : routePhase === 'turning-away' || routePhase === 'turning-arrival' ? 'Relaxed Idle' : routePhase === 'walking' ? 'Walking' : routePhase === 'arrived' && infoScene === 'details' ? 'Relaxed Idle' : barbaraAction}
             traveling={routePhase !== 'idle'}
             facingBack={routePhase === 'turning-away' || routePhase === 'walking'}
             walkProgress={walkProgress} gardenPhase={gardenPhase} gardenProgress={gardenProgress}
           />
-          <Luis
-            actionName={exploring ? (danceLuis ? 'Step Hip Hop Dance' : 'Breathing Idle') : gardenPhase !== 'idle' ? GARDEN_PROGRAM[selectedActivity].luis : routePhase === 'turning-away' || routePhase === 'turning-arrival' ? 'Turning' : routePhase === 'walking' ? 'Walking' : routePhase === 'arrived' && infoScene === 'details' ? 'Pointing' : luisAction}
+          <Character path={LUIS_PATH} character="luis"
+            actionName={exploring ? (danceLuis ? 'Step Hip Hop Dance' : 'Relaxed Idle') : gardenPhase !== 'idle' ? (gardenPhase === 'ready' ? GARDEN_PROGRAM[selectedActivity].luis : 'Relaxed Idle') : routePhase === 'turning-away' || routePhase === 'turning-arrival' ? 'Relaxed Idle' : routePhase === 'walking' ? 'Walking' : routePhase === 'arrived' && infoScene === 'details' ? 'Relaxed Idle' : luisAction}
             traveling={routePhase !== 'idle'}
             facingBack={routePhase === 'turning-away' || routePhase === 'walking'}
             walkProgress={walkProgress} gardenPhase={gardenPhase} gardenProgress={gardenProgress}
