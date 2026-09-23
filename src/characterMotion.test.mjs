@@ -12,6 +12,7 @@ export async function loadRig(file) {
 
 import test from 'node:test'
 import assert from 'node:assert/strict'
+import { CHARACTER_ANIMATIONS } from './characterAnimations.mjs'
 import { prepareCharacterClips, blendWeights } from './characterMotion.mjs'
 
 test('rapid animation changes preserve full pose weight without blending into the bind pose', () => {
@@ -25,6 +26,7 @@ test('rapid animation changes preserve full pose weight without blending into th
 for(const [character,file,scale] of [['barbara','Barbara_TEST_14AnimacionesV2.glb',0.22],['luis','LuisAnimado.glb',0.24],['barbara','mobile/barbara.glb',0.22],['luis','mobile/luis.glb',0.24]]) {
  test(file + ': real clips remain finite, stationary and seamless after preparation', async () => {
   const {animations}=await loadRig('public/models/'+file)
+  assert.deepEqual(animations.map(a=>a.name).sort(), [...CHARACTER_ANIMATIONS[character]].sort())
   const originals=animations.map(c=>c.tracks.map(t=>Array.from(t.values)))
   const {clips,stride}=prepareCharacterClips(animations,character,scale)
   assert.ok(stride>1&&stride<2)

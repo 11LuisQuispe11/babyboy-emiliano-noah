@@ -1,0 +1,60 @@
+{
+  "barbara-desktop": {
+    "before": 21051648,
+    "after": 20054840,
+    "saved": 996808,
+    "removed": [
+      "Happy",
+      "Talking",
+      "Pointing",
+      "Turning",
+      "Clapping",
+      "Breathing Idle",
+      "Talking_Gesture"
+    ]
+  },
+  "barbara-mobile": {
+    "before": 3979308,
+    "after": 3038096,
+    "saved": 941212,
+    "removed": [
+      "Happy",
+      "Talking",
+      "Pointing",
+      "Turning",
+      "Clapping",
+      "Breathing Idle",
+      "Talking_Gesture"
+    ]
+  },
+  "luis-desktop": {
+    "before": 43294800,
+    "after": 42633220,
+    "saved": 661580,
+    "removed": [
+      "Turning",
+      "Thankful",
+      "Talking_gesture",
+      "Talking",
+      "Pointing",
+      "Happy Idle",
+      "Clapping",
+      "Breathing Idle"
+    ]
+  },
+  "luis-mobile": {
+    "before": 3532580,
+    "after": 2924680,
+    "saved": 607900,
+    "removed": [
+      "Turning",
+      "Thankful",
+      "Talking_gesture",
+      "Talking",
+      "Pointing",
+      "Happy Idle",
+      "Clapping",
+      "Breathing Idle"
+    ]
+  }
+}

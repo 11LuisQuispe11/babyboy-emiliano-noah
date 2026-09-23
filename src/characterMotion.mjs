@@ -1,3 +1,4 @@
+import { CHARACTER_ANIMATIONS } from './characterAnimations.mjs'
 import { Quaternion } from 'three'
 
 const lowerBody = /Hips|UpLeg|Leg|Foot|Toe/
@@ -15,7 +16,7 @@ export function prepareCharacterClips(animations, character, scale) {
   const q = new Quaternion(), target = new Quaternion()
   const walk = animations.find(c => c.name === 'Walking').tracks.find(t => /Hips.position$/.test(t.name))
   const stride = Math.abs(walk.values[walk.values.length - 2] - walk.values[1]) * scale
-  const clips = animations.map(c => c.clone())
+  const clips = animations.filter(c => CHARACTER_ANIMATIONS[character].includes(c.name)).map(c => c.clone())
   for (const clip of clips) {
     if (clip.name === 'Idle') continue // Use the original authored waiting animation unchanged.
     const stationary = !/Walking|Dance|Excited/.test(clip.name)

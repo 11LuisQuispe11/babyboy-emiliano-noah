@@ -24,3 +24,7 @@ Los tel?fonos, tabletas y equipos con poca memoria usan `public/models/mobile/`.
 Despu?s de sustituir un modelo original, ejecuta `npm run optimize:mobile`, revisa la vista m?vil y ejecuta `node --test src/*.test.mjs` y `npm run build`. Incluye los GLB m?viles, `src/mobileAssets.json` y `scripts/mobile-assets-report.json` al publicar. El script conserva las animaciones, limita las texturas a 512 px para el escenario y 1024 px para los personajes, y actualiza las referencias de cach?.
 
 El informe estima memoria de texturas RGBA con mipmaps; no representa la memoria total del navegador. La emulaci?n de escritorio no sustituye una prueba en el tel?fono afectado.
+
+## Animaciones publicadas
+
+`src/characterAnimations.mjs` define las animaciones usadas: 7 de Barbara y 6 de Luis. Tras reemplazar personajes originales, ejecuta `npm run trim:animations` y `npm run optimize:mobile` para retirar clips sobrantes y renovar los archivos y sus referencias. Conserva `Waving` de Barbara: tambi?n es referencia interna para la caminata. Las copias originales de la ra?z no se modifican.

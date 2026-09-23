@@ -4,6 +4,7 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions'
 import { dedup, flatten, join, prune, simplify, weld, textureCompress } from '@gltf-transform/functions'
 import { MeshoptSimplifier } from 'meshoptimizer'
 import sharp from 'sharp'
+import { retainUsedAnimations } from './retain-used-animations.mjs'
 import { createHash } from 'node:crypto'
 
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS)
@@ -27,6 +28,7 @@ await fs.mkdir('public/models/mobile', { recursive: true })
 for (const [key, file, ratio, size] of assets) {
   const document = await io.read('public/models/' + file)
   const before = stats(document)
+  if (key !== 'scene') await retainUsedAnimations(document, key)
   if (key === 'scene') await document.transform(dedup(), flatten(), join())
   await document.transform(weld(), simplify({ simplifier: key === 'scene' ? { ...MeshoptSimplifier, simplify: (indices, positions, stride, count, error, flags) => MeshoptSimplifier.simplify(indices, positions, stride, count, error, [...flags, 'Permissive']) } : MeshoptSimplifier, ratio, error: key === 'scene' ? 0.001 : 0.002 }), textureCompress({ encoder: sharp, targetFormat: 'webp', resize: [size,size], quality: 75 }))
   if (key === 'scene') await document.transform(prune())

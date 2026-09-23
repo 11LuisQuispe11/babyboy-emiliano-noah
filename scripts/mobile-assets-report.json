@@ -45,21 +45,14 @@
       "animations": [
         "Waving",
         "Idle",
-        "Happy",
-        "Talking",
-        "Pointing",
         "Walking",
-        "Turning",
-        "Clapping",
         "Step Hip Hop Dance",
         "Thankful",
         "Excited",
-        "Breathing Idle",
-        "Standing Greeting",
-        "Talking_Gesture"
+        "Standing Greeting"
       ]
     },
-    "bytes": 3979308
+    "bytes": 3038096
   },
   "luis": {
     "source": "LuisAnimado.glb",
@@ -91,20 +84,12 @@
       "animations": [
         "Walking",
         "Waving",
-        "Turning",
-        "Thankful",
-        "Talking_gesture",
-        "Talking",
         "Step Hip Hop Dance",
         "Standing Greeting",
-        "Pointing",
         "Idle",
-        "Happy Idle",
-        "ExcitedAmazing",
-        "Clapping",
-        "Breathing Idle"
+        "ExcitedAmazing"
       ]
     },
-    "bytes": 3532580
+    "bytes": 2924680
   }
 }

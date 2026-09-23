@@ -2,6 +2,7 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'rea
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Environment, useGLTF, useProgress } from '@react-three/drei'
 
+import characterAssets from './characterAssets.json'
 import mobileAssets from './mobileAssets.json'
 import { shouldUseMobileAssets } from './renderProfile.mjs'
 import { Vector3 } from 'three'
@@ -18,8 +19,8 @@ import { GARDEN_DURATIONS, GARDEN_POSITIONS, getGardenShot, hostsInGarden } from
 
 const MOBILE_RENDERING = shouldUseMobileAssets({ coarsePointer: window.matchMedia('(pointer: coarse)').matches, touchPoints: navigator.maxTouchPoints, screenWidth: window.screen.width, deviceMemory: navigator.deviceMemory, saveData: navigator.connection?.saveData })
 const SCENE_PATH = import.meta.env.BASE_URL + (MOBILE_RENDERING ? mobileAssets.scene : 'models/EscenarioV3.glb?v=046b5a70e2da7afe')
-const BARBARA_PATH = import.meta.env.BASE_URL + (MOBILE_RENDERING ? mobileAssets.barbara : 'models/Barbara_TEST_14AnimacionesV2.glb')
-const LUIS_PATH = import.meta.env.BASE_URL + (MOBILE_RENDERING ? mobileAssets.luis : 'models/LuisAnimado.glb')
+const BARBARA_PATH = import.meta.env.BASE_URL + (MOBILE_RENDERING ? mobileAssets.barbara : characterAssets.barbara)
+const LUIS_PATH = import.meta.env.BASE_URL + (MOBILE_RENDERING ? mobileAssets.luis : characterAssets.luis)
 const PREVIEW_GIFTS = import.meta.env.DEV && new URLSearchParams(window.location.search).get('escena') === '4'
 const PREVIEW_GARDEN = import.meta.env.DEV && new URLSearchParams(window.location.search).get('escena') === '3'
 const PREVIEW_DETAILS = import.meta.env.DEV && new URLSearchParams(window.location.search).get('escena') === '2'
