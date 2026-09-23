@@ -4,7 +4,7 @@ import { useGLTF } from '@react-three/drei'
 import { AnimationMixer, LoopOnce, LoopRepeat } from 'three'
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js'
 import { prepareCharacterClips, blendWeights } from './characterMotion.mjs'
-import { WALK_DURATION_MS, dampingAmount } from './sceneMotion.mjs'
+import { WALK_DURATION_MS, WALK_DISTANCE, getHostRoutePosition, dampingAmount } from './sceneMotion.mjs'
 import { GARDEN_POSITIONS, hostsInGarden } from './gardenMotion.mjs'
 
 export default function Character({ path, character, actionName, traveling, facingBack, walkProgress, gardenPhase, gardenProgress }) {
@@ -27,7 +27,7 @@ export default function Character({ path, character, actionName, traveling, faci
     if (rig.weights[rig.selected] < 0.01 || action.time >= action.getClip().duration) action.reset()
     action.setLoop(repeating ? LoopRepeat : LoopOnce, Infinity)
     action.clampWhenFinished = true
-    action.timeScale = actionName === 'Walking' ? (17 / (WALK_DURATION_MS / 1000)) * action.getClip().duration / rig.stride : /Idle/.test(actionName) ? 0.8 : /Dance/.test(actionName) ? 0.9 : 0.85
+    action.timeScale = actionName === 'Walking' ? (WALK_DISTANCE / (WALK_DURATION_MS / 1000)) * action.getClip().duration / rig.stride : /Idle/.test(actionName) ? 0.8 : /Dance/.test(actionName) ? 0.9 : 0.85
     action.play()
   }, [actionName, rig])
   useEffect(() => () => { rig.mixer.stopAllAction() }, [rig])
@@ -43,7 +43,7 @@ export default function Character({ path, character, actionName, traveling, faci
     rig.mixer.update(dt)
     const progress = traveling ? walkProgress.current : 0
     const startX = character === 'barbara' ? -0.38 : 0.38
-    const position = hostsInGarden(gardenPhase, gardenProgress.current) ? GARDEN_POSITIONS[character] : [startX, 0.18, 17 * (1 - progress)]
+    const position = hostsInGarden(gardenPhase, gardenProgress.current) ? GARDEN_POSITIONS[character] : getHostRoutePosition(character, progress)
     group.current.position.set(...position)
     const target = facingBack ? Math.PI : 0
     const difference = Math.atan2(Math.sin(target - group.current.rotation.y), Math.cos(target - group.current.rotation.y))

@@ -1,15 +1,16 @@
 import { CatmullRomCurve3, Vector3 } from 'three'
-import { getRouteShot } from './sceneMotion.mjs'
+import { getRouteShot, ROUTE_CENTER_X } from './sceneMotion.mjs'
 
 export const GARDEN_DURATIONS = { travel: 14000, panorama: 10000, reveal: 1400 }
-export const GARDEN_POSITIONS = { barbara: [-0.48, 0.02, -34.2], luis: [0.48, 0.02, -34.2] }
+export const GARDEN_POSITIONS = { barbara: [-1.68, 0.18, -2.7], luis: [-0.72, 0.18, -2.7] }
 export const ease = (value) => { const p = Math.max(0, Math.min(1, value)); return p * p * (3 - 2 * p) }
 const blend = (a, b, t) => a + (b - a) * t
 
 const routes = [false, true].map((portrait) => {
   const start = getRouteShot('arrived', 1, portrait)
   const y = portrait ? 2.65 : 2.1
-  const points = [start.position, [0, y, 2], [0, y, 0.05], [-1.5, y, -0.2], [-4.9, y, -0.2], [-5.45, y, -1.2], [-5.45, y, -8], [-5.45, y, -16], [-4.8, y, -18], [-1.5, y, -21], [0, y, -24], [0, y, -28]]
+  // Pass left of the roof (x: -2.12..2.96, z: 6.81..10.94).
+  const points = [start.position, [ROUTE_CENTER_X, y, 12], [-2, y, 11.8], [-3.4, y, 11.5], [-3.4, y, 9], [-3.4, y, 6], [-2.4, y, 4.5], [-1.2, y, 3.5]]
   const curve = new CatmullRomCurve3(points.map(p => new Vector3(...p)), false, 'centripetal')
   curve.arcLengthDivisions = 600
   curve.updateArcLengths()
@@ -19,9 +20,9 @@ const routes = [false, true].map((portrait) => {
 export function getGardenShot(phase, progress, portrait = false) {
   const p = Math.max(0, Math.min(1, progress))
   const y = portrait ? 2.65 : 2.1
-  const targetY = portrait ? 1.55 : 1.25
-  const position = [0, y, -28]
-  const target = [0, targetY, -34.2]
+  const targetY = portrait ? 1.85 : 1.25
+  const position = [-1.2, y, 3.5]
+  const target = [-1.2, targetY, -2.7]
   if (phase === 'travel') {
     const start = getRouteShot('arrived', 1, portrait)
     const curve = routes[portrait ? 1 : 0]
@@ -40,7 +41,7 @@ export function getGardenShot(phase, progress, portrait = false) {
   }
   if (phase === 'panorama') {
     const angle = Math.PI * 2 * ease(p)
-    return { position, target: [6.2 * Math.sin(angle), targetY, -28 - 6.2 * Math.cos(angle)], fov: 58 }
+    return { position, target: [-1.2 + 6.2 * Math.sin(angle), targetY, 3.5 - 6.2 * Math.cos(angle)], fov: 58 }
   }
   return { position, target, fov: blend(58, portrait ? 48 : 40, phase === 'reveal' ? ease(p) : 1) }
 }

@@ -13,13 +13,9 @@ import GiftRegistry from './GiftRegistry.jsx'
 import GardenActivities, { GARDEN_PROGRAM } from './GardenActivities.jsx'
 import { GARDEN_DURATIONS, GARDEN_POSITIONS, getGardenShot, hostsInGarden } from './gardenMotion.mjs'
 
-const SCENE_PATH = import.meta.env.BASE_URL + 'models/Escenariov2.glb'
+const SCENE_PATH = import.meta.env.BASE_URL + 'models/EscenarioV3.glb?v=155a998bbbbc31ba'
 const BARBARA_PATH = import.meta.env.BASE_URL + 'models/Barbara_TEST_14AnimacionesV2.glb'
 const LUIS_PATH = import.meta.env.BASE_URL + 'models/LuisAnimado.glb'
-const BARBARA_START_POSITION = [-0.38, 0.18, 17]
-const LUIS_START_POSITION = [0.38, 0.18, 17]
-const BARBARA_ENTRY_POSITION = [-0.38, 0.18, 0]
-const LUIS_ENTRY_POSITION = [0.38, 0.18, 0]
 const PREVIEW_GIFTS = import.meta.env.DEV && new URLSearchParams(window.location.search).get('escena') === '4'
 const PREVIEW_GARDEN = import.meta.env.DEV && new URLSearchParams(window.location.search).get('escena') === '3'
 const PREVIEW_DETAILS = import.meta.env.DEV && new URLSearchParams(window.location.search).get('escena') === '2'
@@ -99,7 +95,8 @@ function Scenario() {
     })
   }, [scene])
 
-  return <primitive object={scene} />
+  // Align the authored entrance with the invitation route; preserve meter scale.
+  return <group position={[-7.9, 0, 18]}><primitive object={scene} /></group>
 }
 
 function RouteProgress({ routePhase, walkProgress, onArrive }) {
@@ -152,8 +149,8 @@ function ExploreCamera({ active, joystick }) {
     if (!active) return
     camera.position.x += joystick.x * delta * 4
     camera.position.z += joystick.y * delta * 4
-    camera.position.x = Math.max(-12, Math.min(12, camera.position.x))
-    camera.position.z = Math.max(-35, Math.min(18, camera.position.z))
+    camera.position.x = Math.max(-5.3, Math.min(3.5, camera.position.x))
+    camera.position.z = Math.max(-3.5, Math.min(17.8, camera.position.z))
     camera.lookAt(camera.position.x, 1.5, camera.position.z - 5)
   })
 

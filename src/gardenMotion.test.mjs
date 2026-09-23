@@ -19,8 +19,8 @@ test('route follows the entrance and left corridor, avoiding the entrance buildi
   for(let i=0;i<=1000;i++) {
     const [x,y,z]=getGardenShot('travel',i/1000).position
     assert.ok(Number.isFinite(x+y+z))
-    assert.ok(!(x>=-4.51 && x<=8.79 && z>=-3.32 && z<=-0.87),'camera entered the building')
-    if(z < -3.32 && z > -16) assert.ok(x >= -6.32 && x <= -4.57, 'camera left the corridor')
+    assert.ok(!(x>=-2.12 && x<=2.96 && z>=6.81 && z<=10.94),'camera entered the building')
+    if(z < 10.94 && z > 6.81) assert.ok(x >= -4.2 && x <= -2.6, 'camera left the corridor')
   }
 })
 
@@ -28,8 +28,8 @@ test('panorama turns a full 360 degrees from a fixed garden-center position', ()
   let previous=0,total=0
   for(let i=0;i<=1000;i++) {
     const shot=getGardenShot('panorama',i/1000)
-    close(shot.position,[0,2.1,-28])
-    const angle=Math.atan2(shot.target[0],-(shot.target[2]+28))
+    close(shot.position,[-1.2,2.1,3.5])
+    const angle=Math.atan2(shot.target[0]+1.2,-(shot.target[2]-3.5))
     let diff=angle-previous
     if(diff < -Math.PI)diff+=Math.PI*2
     total+=diff;previous=angle
