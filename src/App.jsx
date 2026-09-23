@@ -2,8 +2,11 @@ import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'rea
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Environment, useGLTF, useProgress } from '@react-three/drei'
 
+import mobileAssets from './mobileAssets.json'
+import { shouldUseMobileAssets } from './renderProfile.mjs'
 import { Vector3 } from 'three'
 import Character from './Character.jsx'
+import RenderLifecycle from './RenderLifecycle.jsx'
 import { dampingAmount, getRouteShot, WALK_DURATION_MS } from './sceneMotion.mjs'
 
 import { invitationName } from './invitationName.mjs'
@@ -13,9 +16,10 @@ import GiftRegistry from './GiftRegistry.jsx'
 import GardenActivities, { GARDEN_PROGRAM } from './GardenActivities.jsx'
 import { GARDEN_DURATIONS, GARDEN_POSITIONS, getGardenShot, hostsInGarden } from './gardenMotion.mjs'
 
-const SCENE_PATH = import.meta.env.BASE_URL + 'models/EscenarioV3.glb?v=046b5a70e2da7afe'
-const BARBARA_PATH = import.meta.env.BASE_URL + 'models/Barbara_TEST_14AnimacionesV2.glb'
-const LUIS_PATH = import.meta.env.BASE_URL + 'models/LuisAnimado.glb'
+const MOBILE_RENDERING = shouldUseMobileAssets({ coarsePointer: window.matchMedia('(pointer: coarse)').matches, touchPoints: navigator.maxTouchPoints, screenWidth: window.screen.width, deviceMemory: navigator.deviceMemory, saveData: navigator.connection?.saveData })
+const SCENE_PATH = import.meta.env.BASE_URL + (MOBILE_RENDERING ? mobileAssets.scene : 'models/EscenarioV3.glb?v=046b5a70e2da7afe')
+const BARBARA_PATH = import.meta.env.BASE_URL + (MOBILE_RENDERING ? mobileAssets.barbara : 'models/Barbara_TEST_14AnimacionesV2.glb')
+const LUIS_PATH = import.meta.env.BASE_URL + (MOBILE_RENDERING ? mobileAssets.luis : 'models/LuisAnimado.glb')
 const PREVIEW_GIFTS = import.meta.env.DEV && new URLSearchParams(window.location.search).get('escena') === '4'
 const PREVIEW_GARDEN = import.meta.env.DEV && new URLSearchParams(window.location.search).get('escena') === '3'
 const PREVIEW_DETAILS = import.meta.env.DEV && new URLSearchParams(window.location.search).get('escena') === '2'
@@ -78,7 +82,7 @@ const EVENT_DETAILS = [
 ]
 
 
-function Scenario() {
+function Scenario({ onReady }) {
   const { scene } = useGLTF(SCENE_PATH)
 
   useEffect(() => {
@@ -94,6 +98,8 @@ function Scenario() {
       })
     })
   }, [scene])
+
+  useEffect(() => { onReady() }, [onReady])
 
   // Align the authored entrance with the invitation route; preserve meter scale.
   return <group position={[-7.9, 0, 18]}><primitive object={scene} /></group>
@@ -157,9 +163,9 @@ function ExploreCamera({ active, joystick }) {
   return null
 }
 
-function IntroScreen({ onComplete }) {
+function IntroScreen({ onComplete, assetsReady }) {
   const { active, progress, errors } = useProgress()
-  const ready = !active && progress >= 100 && errors.length === 0
+  const ready = assetsReady && !active && progress >= 100 && errors.length === 0
   useEffect(() => {
     if (!ready) return undefined
     const timer = window.setTimeout(onComplete, 1600)
@@ -292,6 +298,13 @@ function VirtualJoystick({ onMove }) {
 }
 
 export default function App() {
+  const [contextLost, setContextLost] = useState(false)
+  const loseContext = useCallback(() => setContextLost(true), [])
+  const restoreContext = useCallback(() => setContextLost(false), [])
+  const [assetStage, setAssetStage] = useState(0)
+  const sceneReady = useCallback(() => setAssetStage(stage => Math.max(stage, 1)), [])
+  const barbaraReady = useCallback(() => setAssetStage(stage => Math.max(stage, 2)), [])
+  const luisReady = useCallback(() => setAssetStage(3), [])
   const [welcomeStarted, setWelcomeStarted] = useState(PREVIEW_DETAILS || PREVIEW_GARDEN || PREVIEW_GIFTS)
   const [routePhase, setRoutePhase] = useState(PREVIEW_DETAILS || PREVIEW_GARDEN || PREVIEW_GIFTS ? 'arrived' : 'idle')
   const walkProgress = useRef(PREVIEW_DETAILS || PREVIEW_GARDEN || PREVIEW_GIFTS ? 1 : 0)
@@ -345,31 +358,42 @@ export default function App() {
   return (
     <main className="app-shell" data-garden-phase={gardenPhase}>
       <BackgroundMusic />
-      <Canvas dpr={[1, 1.5]} camera={{ position: INITIAL_SHOT.position, fov: INITIAL_SHOT.fov, near: 0.1, far: 180 }}>
+      {contextLost && <section className="intro-screen" role="alert"><div className="intro-content"><h1>Tu invitaci?n sigue aqu?</h1><p>El tel?fono interrumpi? la vista 3D. Espera un momento o vuelve a abrir la invitaci?n.</p><p>Domingo 8 de noviembre ? 3:00 p. m.</p><p>La Hacienda Blanca, Lurigancho-Chosica.</p><a href={MAP_URL} target="_blank" rel="noreferrer">Ver ubicaci?n</a></div></section>}
+      <Canvas dpr={MOBILE_RENDERING ? 1 : [1, 1.5]} gl={{ antialias: !MOBILE_RENDERING, alpha: true, powerPreference: MOBILE_RENDERING ? 'low-power' : 'default' }} camera={{ position: INITIAL_SHOT.position, fov: INITIAL_SHOT.fov, near: 0.1, far: 180 }}>
+        <RenderLifecycle onContextLost={loseContext} onContextRestored={restoreContext} />
         <RouteProgress routePhase={routePhase} walkProgress={walkProgress} onArrive={setRoutePhase} />
         <ambientLight intensity={0.65} />
+        {MOBILE_RENDERING && <hemisphereLight args={['#ffffff', '#9aa68b', 0.65]} />}
         <directionalLight position={[4, 6, 4]} intensity={0.9} />
         <Suspense fallback={null}>
-          <Scenario />
-          <Character path={BARBARA_PATH} character="barbara"
+          <Scenario onReady={sceneReady} />
+        </Suspense>
+        <Suspense fallback={null}>
+          {assetStage >= 1 && <>
+          <Character path={BARBARA_PATH} character="barbara" onReady={barbaraReady}
             actionName={exploring ? (danceBarbara ? 'Step Hip Hop Dance' : 'Idle') : gardenPhase !== 'idle' ? (gardenPhase === 'ready' ? GARDEN_PROGRAM[selectedActivity].barbara : 'Idle') : routePhase === 'turning-away' || routePhase === 'turning-arrival' ? 'Idle' : routePhase === 'walking' ? 'Walking' : routePhase === 'arrived' && infoScene === 'details' ? 'Idle' : barbaraAction}
             traveling={routePhase !== 'idle'}
             facingBack={routePhase === 'turning-away' || routePhase === 'walking'}
             walkProgress={walkProgress} gardenPhase={gardenPhase} gardenProgress={gardenProgress}
           />
-          <Character path={LUIS_PATH} character="luis"
+          </>}
+        </Suspense>
+        <Suspense fallback={null}>
+          {assetStage >= 2 && <>
+          <Character path={LUIS_PATH} character="luis" onReady={luisReady}
             actionName={exploring ? (danceLuis ? 'Step Hip Hop Dance' : 'Idle') : gardenPhase !== 'idle' ? (gardenPhase === 'ready' ? GARDEN_PROGRAM[selectedActivity].luis : 'Idle') : routePhase === 'turning-away' || routePhase === 'turning-arrival' ? 'Idle' : routePhase === 'walking' ? 'Walking' : routePhase === 'arrived' && infoScene === 'details' ? 'Idle' : luisAction}
             traveling={routePhase !== 'idle'}
             facingBack={routePhase === 'turning-away' || routePhase === 'walking'}
             walkProgress={walkProgress} gardenPhase={gardenPhase} gardenProgress={gardenProgress}
           />
-          <Environment preset="studio" environmentIntensity={0.45} />
+          </>}
+          {!MOBILE_RENDERING && <Environment preset="studio" environmentIntensity={0.45} />}
         </Suspense>
         <CameraTransition routePhase={routePhase} walkProgress={walkProgress} exploring={exploring} gardenPhase={gardenPhase} gardenProgress={gardenProgress} onGardenPhase={setGardenPhase} />
         <ExploreCamera active={exploring} joystick={joystick} />
       </Canvas>
 
-      {!welcomeStarted && <IntroScreen onComplete={() => setWelcomeStarted(true)} />}
+      {!contextLost && !welcomeStarted && <IntroScreen assetsReady={assetStage === 3} onComplete={() => setWelcomeStarted(true)} />}
       {welcomeStarted && (routePhase === 'idle' || routePhase === 'turning-away') && <WelcomeSequence leaving={routePhase !== 'idle'} guestName={guestName} onActionChange={handleDialogueAction} onContinue={startWalking} />}
       {routePhase !== 'idle' && routePhase !== 'arrived' && <div className="walk-caption">Barbara y Luis están entrando...</div>}
       {routePhase === 'arrived' && infoScene === 'details' && <EventDetails onActivities={startGarden} />}
@@ -381,7 +405,3 @@ export default function App() {
     </main>
   )
 }
-
-useGLTF.preload(SCENE_PATH)
-useGLTF.preload(BARBARA_PATH)
-useGLTF.preload(LUIS_PATH)

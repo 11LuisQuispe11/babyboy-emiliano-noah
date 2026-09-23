@@ -1,0 +1,110 @@
+{
+  "scene": {
+    "source": "EscenarioV3.glb",
+    "before": {
+      "triangles": 1051060,
+      "primitives": 3614,
+      "textureMiB": 126.8,
+      "animations": []
+    },
+    "after": {
+      "triangles": 328920,
+      "primitives": 89,
+      "textureMiB": 35.4,
+      "animations": []
+    },
+    "bytes": 16502468
+  },
+  "barbara": {
+    "source": "Barbara_TEST_14AnimacionesV2.glb",
+    "before": {
+      "triangles": 399999,
+      "primitives": 1,
+      "textureMiB": 682.7,
+      "animations": [
+        "Waving",
+        "Idle",
+        "Happy",
+        "Talking",
+        "Pointing",
+        "Walking",
+        "Turning",
+        "Clapping",
+        "Step Hip Hop Dance",
+        "Thankful",
+        "Excited",
+        "Breathing Idle",
+        "Standing Greeting",
+        "Talking_Gesture"
+      ]
+    },
+    "after": {
+      "triangles": 47992,
+      "primitives": 1,
+      "textureMiB": 10.7,
+      "animations": [
+        "Waving",
+        "Idle",
+        "Happy",
+        "Talking",
+        "Pointing",
+        "Walking",
+        "Turning",
+        "Clapping",
+        "Step Hip Hop Dance",
+        "Thankful",
+        "Excited",
+        "Breathing Idle",
+        "Standing Greeting",
+        "Talking_Gesture"
+      ]
+    },
+    "bytes": 3979308
+  },
+  "luis": {
+    "source": "LuisAnimado.glb",
+    "before": {
+      "triangles": 999999,
+      "primitives": 1,
+      "textureMiB": 682.7,
+      "animations": [
+        "Walking",
+        "Waving",
+        "Turning",
+        "Thankful",
+        "Talking_gesture",
+        "Talking",
+        "Step Hip Hop Dance",
+        "Standing Greeting",
+        "Pointing",
+        "Idle",
+        "Happy Idle",
+        "ExcitedAmazing",
+        "Clapping",
+        "Breathing Idle"
+      ]
+    },
+    "after": {
+      "triangles": 59994,
+      "primitives": 1,
+      "textureMiB": 10.7,
+      "animations": [
+        "Walking",
+        "Waving",
+        "Turning",
+        "Thankful",
+        "Talking_gesture",
+        "Talking",
+        "Step Hip Hop Dance",
+        "Standing Greeting",
+        "Pointing",
+        "Idle",
+        "Happy Idle",
+        "ExcitedAmazing",
+        "Clapping",
+        "Breathing Idle"
+      ]
+    },
+    "bytes": 3532580
+  }
+}

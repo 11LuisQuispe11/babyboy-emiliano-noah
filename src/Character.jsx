@@ -7,9 +7,10 @@ import { prepareCharacterClips, blendWeights } from './characterMotion.mjs'
 import { WALK_DURATION_MS, WALK_DISTANCE, getHostRoutePosition, dampingAmount } from './sceneMotion.mjs'
 import { GARDEN_POSITIONS, hostsInGarden } from './gardenMotion.mjs'
 
-export default function Character({ path, character, actionName, traveling, facingBack, walkProgress, gardenPhase, gardenProgress }) {
+export default function Character({ path, character, actionName, traveling, facingBack, walkProgress, gardenPhase, gardenProgress, onReady }) {
   const source = useGLTF(path)
   const group = useRef()
+  useEffect(() => { onReady?.() }, [onReady])
   const rig = useMemo(() => {
     const scene = clone(source.scene)
     const { clips, stride } = prepareCharacterClips(source.animations, character, character === 'barbara' ? 0.22 : 0.24)

@@ -22,8 +22,8 @@ test('rapid animation changes preserve full pose weight without blending into th
   assert.ok(weights.every(w=>w>=0&&w<=1))
  }
 })
-for(const [character,file,scale] of [['barbara','Barbara_TEST_14AnimacionesV2.glb',0.22],['luis','LuisAnimado.glb',0.24]]) {
- test(character + ': real clips remain finite, stationary and seamless after preparation', async () => {
+for(const [character,file,scale] of [['barbara','Barbara_TEST_14AnimacionesV2.glb',0.22],['luis','LuisAnimado.glb',0.24],['barbara','mobile/barbara.glb',0.22],['luis','mobile/luis.glb',0.24]]) {
+ test(file + ': real clips remain finite, stationary and seamless after preparation', async () => {
   const {animations}=await loadRig('public/models/'+file)
   const originals=animations.map(c=>c.tracks.map(t=>Array.from(t.values)))
   const {clips,stride}=prepareCharacterClips(animations,character,scale)
