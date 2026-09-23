@@ -13,7 +13,7 @@ import GiftRegistry from './GiftRegistry.jsx'
 import GardenActivities, { GARDEN_PROGRAM } from './GardenActivities.jsx'
 import { GARDEN_DURATIONS, GARDEN_POSITIONS, getGardenShot, hostsInGarden } from './gardenMotion.mjs'
 
-const SCENE_PATH = import.meta.env.BASE_URL + 'models/EscenarioV3.glb?v=155a998bbbbc31ba'
+const SCENE_PATH = import.meta.env.BASE_URL + 'models/EscenarioV3.glb?v=046b5a70e2da7afe'
 const BARBARA_PATH = import.meta.env.BASE_URL + 'models/Barbara_TEST_14AnimacionesV2.glb'
 const LUIS_PATH = import.meta.env.BASE_URL + 'models/LuisAnimado.glb'
 const PREVIEW_GIFTS = import.meta.env.DEV && new URLSearchParams(window.location.search).get('escena') === '4'
