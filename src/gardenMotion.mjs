@@ -1,7 +1,9 @@
 ﻿import { getRouteShot } from './sceneMotion.mjs'
 
 export const GARDEN_DURATIONS = { sunlight: 3200 }
-export const GARDEN_POSITIONS = { barbara: [-1.68, 0.18, -2.7], luis: [-0.72, 0.18, -2.7] }
+// The garden floor is at y = 0, unlike the raised entrance path (0.18 m).
+// Step forward from the backdrop; 2 mm compensates for the shoe mesh baseline.
+export const GARDEN_POSITIONS = { barbara: [-1.68, 0.002, -2.35], luis: [-0.72, 0.002, -2.35] }
 export const ease = (value) => { const p = Math.max(0, Math.min(1, value)); return p * p * (3 - 2 * p) }
 
 // The camera and hosts change together under the fully opaque sunlight.

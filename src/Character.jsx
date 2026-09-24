@@ -10,6 +10,7 @@ import { GARDEN_POSITIONS, hostsInGarden } from './gardenMotion.mjs'
 export default function Character({ path, character, actionName, traveling, facingBack, walkProgress, gardenPhase, gardenProgress, onReady }) {
   const source = useGLTF(path)
   const group = useRef()
+  const groundShadow = useRef()
   useEffect(() => { onReady?.() }, [onReady])
   const rig = useMemo(() => {
     const scene = clone(source.scene)
@@ -50,5 +51,15 @@ export default function Character({ path, character, actionName, traveling, faci
     const difference = Math.atan2(Math.sin(target - group.current.rotation.y), Math.cos(target - group.current.rotation.y))
     group.current.rotation.y += difference * dampingAmount(dt, 3.8)
   })
-  return <group ref={group}><primitive object={rig.scene} /></group>
+  return <group ref={group}>
+    <primitive object={rig.scene} />
+    {/* A small soft contact shadow anchors the feet without mobile shadow maps. */}
+    <mesh ref={groundShadow} visible={false} position={[0, 0.003, 0.08]} rotation={[-Math.PI / 2, 0, 0]} renderOrder={1}>
+      <planeGeometry args={[0.85, 0.55]} />
+      <shaderMaterial transparent depthWrite={false}
+        vertexShader="varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }"
+        fragmentShader="varying vec2 vUv; void main() { float r = length((vUv - 0.5) * 2.0); float a = 0.28 * pow(max(0.0, 1.0 - r * r), 2.0); gl_FragColor = vec4(0.12, 0.16, 0.13, a); }"
+      />
+    </mesh>
+  </group>
 }
