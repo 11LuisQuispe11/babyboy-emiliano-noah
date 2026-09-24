@@ -44,8 +44,9 @@ export default function Character({ path, character, actionName, traveling, faci
     rig.actions.forEach((action, index) => action.setEffectiveWeight(rig.weights[index]))
     rig.mixer.update(dt)
     const progress = traveling ? walkProgress.current : 0
-    const startX = character === 'barbara' ? -0.38 : 0.38
-    const position = hostsInGarden(gardenPhase, gardenProgress.current) ? GARDEN_POSITIONS[character] : getHostRoutePosition(character, progress)
+    const inGarden = hostsInGarden(gardenPhase, gardenProgress.current)
+    groundShadow.current.visible = inGarden
+    const position = inGarden ? GARDEN_POSITIONS[character] : getHostRoutePosition(character, progress)
     group.current.position.set(...position)
     const target = facingBack ? Math.PI : 0
     const difference = Math.atan2(Math.sin(target - group.current.rotation.y), Math.cos(target - group.current.rotation.y))
