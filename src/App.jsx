@@ -177,9 +177,9 @@ function IntroScreen({ onComplete, assetsReady }) {
     <section className={`intro-screen invitation-loading${ready ? ' is-ready' : ''}`} aria-label="Preparando tu invitación">
       <div className="loading-halo" aria-hidden="true" /><div className="sunshine-arch" aria-hidden="true" /><span className="sun-cloud cloud-left" aria-hidden="true" /><span className="sun-cloud cloud-right" aria-hidden="true" />
       <div className="intro-content">
-        <p className="intro-kicker">NUESTRO PEQUEÑO RAYITO DE SOL</p>
+        <p className="intro-kicker sunshine-dedication" lang="en"><span>You are our</span><strong>little ray of sunshine</strong></p>
         <div className="loading-emblem sunshine-emblem" aria-hidden="true"><span>&#9728;</span></div>
-        <p className="loading-dedication">Un rayito de sol viene a iluminar nuestras vidas</p>
+        <p className="loading-dedication">Vienes a iluminar nuestras vidas</p>
         <h1>Emiliano<span>Noah</span></h1>
         <p className="loading-signature">Con amor, Barbara y Luis</p>
         <div className="loading-status" role="status">{errors.length ? 'No pudimos preparar la invitación. Intenta nuevamente.' : ready ? 'Todo listo. Bienvenido a nuestra historia.' : 'Estamos preparando un lugar para ti…'}</div>
@@ -403,7 +403,7 @@ export default function App() {
       {routePhase === 'arrived' && gardenPhase === 'ready' && infoScene === 'activities' && <GardenActivities selected={selectedActivity} onSelect={setSelectedActivity} onGifts={() => setInfoScene('attendance')} />}
       {!exploring && routePhase === 'arrived' && infoScene === 'attendance' && <Attendance onBack={() => setInfoScene('activities')} onContinue={() => setInfoScene('gifts')} />}
       {!exploring && routePhase === 'arrived' && infoScene === 'gifts' && <GiftRegistry onBack={() => setInfoScene('attendance')} onExplore={() => { setDanceBarbara(false); setDanceLuis(false); setExploring(true) }} />}
-      {gardenPhase === 'sunlight' && <div ref={sunlightRef} className="sunlight-transition" role="status" aria-label="Un rayito de sol nos lleva al jardín"><span className="transition-sun" aria-hidden="true">&#9728;</span><span className="sun-cloud cloud-left" aria-hidden="true" /><span className="sun-cloud cloud-right" aria-hidden="true" /><p>Un rayito de sol nos lleva al jardín…</p></div>}
+      {gardenPhase === 'sunlight' && <div ref={sunlightRef} className="sunlight-transition" role="status" aria-label="Vamos al jardín"><span className="transition-sun" aria-hidden="true">&#9728;</span><span className="sun-cloud cloud-left" aria-hidden="true" /><span className="sun-cloud cloud-right" aria-hidden="true" /><p>Vamos al jardín</p></div>}
       {exploring && <section className="explore-hud" aria-label="Exploración de La Hacienda Blanca"><span>Explora La Hacienda Blanca</span><div className="garden-play-controls"><button type="button" aria-pressed={danceLuis} onClick={() => setDanceLuis(value => !value)}>{danceLuis ? 'Detener a Luis' : 'Haz bailar a Luis'}</button><button type="button" aria-pressed={danceBarbara} onClick={() => setDanceBarbara(value => !value)}>{danceBarbara ? 'Detener a Barbara' : 'Haz bailar a Barbara'}</button><button type="button" onClick={() => { setJoystick({ x: 0, y: 0 }); setExploring(false) }}>Volver a los regalos</button></div><VirtualJoystick onMove={setJoystick} /></section>}
     </main>
   )

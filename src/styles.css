@@ -481,3 +481,8 @@ button:focus-visible, a:focus-visible { outline: 3px solid #304f63; outline-offs
 .sunlight-transition p { position: relative; padding: 0 24px; text-align: center; font: 600 clamp(25px, 4vw, 38px)/1.2 'Caveat', 'Segoe Print', cursive; }
 @media (max-height: 650px) { .sunshine-emblem { height: 52px; } .sunshine-emblem > span { font-size: 60px; } .invitation-loading { padding-block: 12px; } .invitation-loading h1 { font-size: 54px; } }
 @media (prefers-reduced-motion: reduce) { .invitation-loading .intro-content { animation: none; } }
+
+.invitation-loading .sunshine-dedication { margin: 0 auto 8px; text-transform: none; }
+.sunshine-dedication > span { display: block; font: 600 11px/1.6 'Manrope', sans-serif; letter-spacing: .18em; text-transform: uppercase; }
+.sunshine-dedication > strong { display: block; margin-top: 2px; color: #947021; font: 600 clamp(28px, 5vw, 40px)/1.15 'Caveat', 'Segoe Print', cursive; letter-spacing: 0; text-wrap: balance; }
+@media (max-height: 650px) { .sunshine-dedication > strong { font-size: 27px; } }
