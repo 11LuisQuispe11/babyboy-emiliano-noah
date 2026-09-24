@@ -34,3 +34,8 @@ export function getRouteShot(phase, progress = 0, portrait = false) {
 export function dampingAmount(delta, speed = 4) {
   return 1 - Math.exp(-speed * Math.max(0, delta))
 }
+// Reserve the upper frame for welcome copy, with faces below it.
+// This shot is used only before the entrance walk starts.
+export function getWelcomeShot() {
+  return { position: [ROUTE_CENTER_X, 2.4, 23], target: [ROUTE_CENTER_X, 1.85, 17], fov: 36 }
+}

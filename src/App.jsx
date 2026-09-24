@@ -8,7 +8,7 @@ import { shouldUseMobileAssets } from './renderProfile.mjs'
 import { Vector3 } from 'three'
 import Character from './Character.jsx'
 import RenderLifecycle from './RenderLifecycle.jsx'
-import { dampingAmount, getRouteShot, WALK_DURATION_MS } from './sceneMotion.mjs'
+import { dampingAmount, getRouteShot, getWelcomeShot, WALK_DURATION_MS } from './sceneMotion.mjs'
 
 import { invitationName } from './invitationName.mjs'
 import BackgroundMusic from './BackgroundMusic.jsx'
@@ -24,7 +24,7 @@ const LUIS_PATH = import.meta.env.BASE_URL + (MOBILE_RENDERING ? mobileAssets.lu
 const PREVIEW_GIFTS = import.meta.env.DEV && new URLSearchParams(window.location.search).get('escena') === '4'
 const PREVIEW_GARDEN = import.meta.env.DEV && new URLSearchParams(window.location.search).get('escena') === '3'
 const PREVIEW_DETAILS = import.meta.env.DEV && new URLSearchParams(window.location.search).get('escena') === '2'
-const INITIAL_SHOT = (PREVIEW_GARDEN || PREVIEW_GIFTS) ? getGardenShot('ready', 1, window.innerWidth <= 640 && window.innerHeight > window.innerWidth) : getRouteShot(PREVIEW_DETAILS ? 'arrived' : 'idle', 0, window.innerWidth <= 640 && window.innerHeight > window.innerWidth)
+const INITIAL_SHOT = (PREVIEW_GARDEN || PREVIEW_GIFTS) ? getGardenShot('ready', 1, window.innerWidth <= 640 && window.innerHeight > window.innerWidth) : PREVIEW_DETAILS ? getRouteShot('arrived', 0, window.innerWidth <= 640 && window.innerHeight > window.innerWidth) : getWelcomeShot()
 const MAP_URL = 'https://maps.app.goo.gl/uFatNXWL8boXHFGy6'
 
 function getGuestName() {
@@ -36,7 +36,7 @@ function getDialogue(guestName) {
   return [
     { speaker: 'BARBARA', label: 'Barbara', action: 'Standing Greeting', text: hello + ', soy Barbara.' },
     { speaker: 'LUIS', label: 'Luis', action: 'Waving', text: hello + ', soy Luis.' },
-    { speaker: 'BOTH', label: 'Barbara y Luis', action: 'Idle', text: 'Nuestro pequeño rayito de sol, Emiliano Noah, está por llegar y queremos celebrar esta dulce espera contigo. Te invitamos a su babyshower: una tarde de risas, juegos y mucho cariño. Tu presencia hará este recuerdo aún más especial. ¿Nos acompañas? Descubre lo que estamos preparando para ti.' },
+    { speaker: 'BOTH', label: 'Barbara y Luis', action: 'Idle', text: 'Emiliano Noah, nuestro pequeño rayito de sol, está por llegar. Queremos celebrar su babyshower contigo, entre risas, juegos y mucho cariño. ¡Tu presencia hará esta tarde inolvidable! Descubre los detalles.' },
   ]
 }
 
@@ -115,7 +115,7 @@ function CameraTransition({ routePhase, walkProgress, exploring, gardenPhase, ga
       }
       return
     }
-    const shot = getRouteShot(routePhase, walkProgress.current, size.width <= 640 && size.height > size.width)
+    const shot = routePhase === 'idle' ? getWelcomeShot() : getRouteShot(routePhase, walkProgress.current, size.width <= 640 && size.height > size.width)
     const amount = dampingAmount(delta)
     camera.position.lerp(destination.set(...shot.position), amount)
     focus.current.lerp(destination.set(...shot.target), amount)
@@ -180,7 +180,7 @@ function WelcomeSequence({ guestName, onActionChange, onContinue, leaving }) {
     // Match the greeting clips at their playback speed, then hold both messages.
     const dialogue = dialogueLines[Math.min(greetingStage, 2)]
     onActionChange(dialogue.speaker, dialogue.action)
-    const duration = [6500, 5800, 3000][greetingStage]
+    const duration = [4200, 3800, 1500][greetingStage]
     if (!duration) return undefined
     const timer = window.setTimeout(() => setGreetingStage(stage => stage + 1), duration)
     return () => window.clearTimeout(timer)

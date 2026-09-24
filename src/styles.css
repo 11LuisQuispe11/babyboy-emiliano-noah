@@ -534,3 +534,16 @@ button:focus-visible, a:focus-visible { outline: 3px solid #304f63; outline-offs
 }
 @media (max-height: 540px) and (orientation: landscape) { .welcome-dialogues { top: 28%; max-height: calc(72% - 90px); } }
 @media (prefers-reduced-motion: reduce) { .welcome-dialogues .thought-bubble { animation: none; } }
+
+/* Scene one reserves the upper 42% for copy; faces sit below this area. */
+.welcome-dialogues { top: 100px; max-height: calc(42% - 100px); padding-bottom: 0; }
+.welcome-dialogues .thought-bubble::after { display: none; }
+.welcome-dialogues .thought-text { font-size: 15px; line-height: 1.4; }
+.welcome-dialogues .thought-name { font-size: 11px; margin-bottom: 6px; }
+@media (max-width: 640px) and (orientation: portrait) {
+  .welcome-dialogues { top: 100px; width: calc(100% - 32px); max-height: calc(43% - 100px); gap: 8px; }
+  .welcome-dialogues .thought-bubble { padding: 10px 13px; }
+}
+@media (max-height: 540px) and (orientation: landscape) {
+  .welcome-dialogues { top: 90px; left: 16px; transform: none; width: 36%; max-height: calc(100% - 180px); grid-template-columns: 1fr; gap: 8px; }
+}

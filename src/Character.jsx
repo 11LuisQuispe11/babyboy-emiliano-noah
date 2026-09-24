@@ -29,9 +29,9 @@ export default function Character({ path, character, actionName, traveling, faci
     if (rig.weights[rig.selected] < 0.01 || action.time >= action.getClip().duration) action.reset()
     action.setLoop(repeating ? LoopRepeat : LoopOnce, Infinity)
     action.clampWhenFinished = true
-    action.timeScale = actionName === 'Walking' ? (WALK_DISTANCE / (WALK_DURATION_MS / 1000)) * action.getClip().duration / rig.stride : /Idle/.test(actionName) ? 0.8 : /Dance/.test(actionName) ? 0.9 : 0.85
+    action.timeScale = !traveling && /Standing Greeting|Waving/.test(actionName) ? 1.35 : actionName === 'Walking' ? (WALK_DISTANCE / (WALK_DURATION_MS / 1000)) * action.getClip().duration / rig.stride : /Idle/.test(actionName) ? 0.8 : /Dance/.test(actionName) ? 0.9 : 0.85
     action.play()
-  }, [actionName, rig])
+  }, [actionName, rig, traveling])
   useEffect(() => () => { rig.mixer.stopAllAction() }, [rig])
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.05)
