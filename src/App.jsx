@@ -36,7 +36,7 @@ function getDialogue(guestName) {
   return [
     { speaker: 'BARBARA', label: 'Barbara', action: 'Standing Greeting', text: hello + ', soy Barbara.' },
     { speaker: 'LUIS', label: 'Luis', action: 'Waving', text: hello + ', soy Luis.' },
-    { speaker: 'BOTH', label: 'Barbara y Luis', action: 'Idle', text: 'Te invitamos al babyshower de Emiliano Noah. ¡Celebremos juntos su llegada! Nos encantaría contar contigo.' },
+    { speaker: 'BOTH', label: 'Barbara y Luis', action: 'Idle', text: 'Nuestro pequeño rayito de sol, Emiliano Noah, está por llegar y queremos celebrar esta dulce espera contigo. Te invitamos a su babyshower: una tarde de risas, juegos y mucho cariño. Tu presencia hará este recuerdo aún más especial. ¿Nos acompañas? Descubre lo que estamos preparando para ti.' },
   ]
 }
 
@@ -172,31 +172,33 @@ function IntroScreen({ onComplete, assetsReady }) {
 
 function WelcomeSequence({ guestName, onActionChange, onContinue, leaving }) {
   const dialogueLines = useMemo(() => getDialogue(guestName), [guestName])
-  const [dialogueIndex, setDialogueIndex] = useState(0)
-  const dialogue = dialogueLines[dialogueIndex]
-  const isLast = dialogueIndex === dialogueLines.length - 1
+  const [greetingStage, setGreetingStage] = useState(0)
+  const invitationVisible = greetingStage === 3
 
   useEffect(() => {
     if (leaving) return undefined
+    // Match the greeting clips at their playback speed, then hold both messages.
+    const dialogue = dialogueLines[Math.min(greetingStage, 2)]
     onActionChange(dialogue.speaker, dialogue.action)
-    const timer = window.setTimeout(() => onActionChange(dialogue.speaker, 'Idle'), 3000)
+    const duration = [6500, 5800, 3000][greetingStage]
+    if (!duration) return undefined
+    const timer = window.setTimeout(() => setGreetingStage(stage => stage + 1), duration)
     return () => window.clearTimeout(timer)
-  }, [dialogue, onActionChange, leaving])
+  }, [greetingStage, dialogueLines, onActionChange, leaving])
 
+  const visibleDialogues = invitationVisible ? [dialogueLines[2]] : dialogueLines.slice(0, greetingStage === 0 ? 1 : 2)
   return (
     <section className={`welcome-layer${leaving ? ' welcome-layer-leaving' : ''}`} inert={leaving} aria-label="Bienvenida de Barbara y Luis">
       <p className="welcome-title"><span>Invitación para</span><strong>{guestName || 'una persona especial'}</strong></p>
-      <div className={`thought-bubble thought-${dialogue.speaker.toLowerCase()}`}>
-        <div role="status" aria-live="polite" aria-atomic="true">
-          <div className="dialogue-heading"><span className="thought-name">{dialogue.label}</span><span className="dialogue-step" aria-label={`Diálogo ${dialogueIndex + 1} de ${dialogueLines.length}`}>{dialogueIndex + 1} / {dialogueLines.length}</span></div>
-          <span className="thought-text">{dialogue.text}</span>
-        </div>
-        <nav className="dialogue-navigation" aria-label="Diálogos de bienvenida">
-          <button type="button" className="dialogue-previous" disabled={dialogueIndex === 0} onClick={() => setDialogueIndex(index => Math.max(0, index - 1))}>Anterior</button>
-          <button type="button" className="dialogue-next" onClick={() => isLast ? onContinue() : setDialogueIndex(index => Math.min(dialogueLines.length - 1, index + 1))}>{isLast ? 'Ver el evento' : 'Siguiente'} <span aria-hidden="true">→</span></button>
-        </nav>
+      <div className={`welcome-dialogues${invitationVisible ? ' welcome-dialogues-joint' : ''}`} aria-live="polite" aria-relevant="additions">
+        {visibleDialogues.map(dialogue => (
+          <div key={dialogue.speaker} className={`thought-bubble thought-${dialogue.speaker.toLowerCase()}`}>
+            <span className="thought-name">{dialogue.label}</span>
+            <p className="thought-text">{dialogue.text}</p>
+          </div>
+        ))}
       </div>
-      {!isLast && <button className="welcome-skip" onClick={onContinue} type="button">Ver información del evento <span aria-hidden="true">→</span></button>}
+      <button className="welcome-skip" onClick={onContinue} type="button" aria-label="Continuar a los detalles del evento">Continuar <span aria-hidden="true">→</span></button>
     </section>
   )
 }

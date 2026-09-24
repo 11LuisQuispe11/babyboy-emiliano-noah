@@ -521,17 +521,16 @@ button:focus-visible, a:focus-visible { outline: 3px solid #304f63; outline-offs
   .thought-bubble { top: 30%; }
 }
 
-/* Reader-paced welcome: complete text remains until the guest advances. */
-.thought-both { left: 50%; background: #fffbef; transform: translateX(-50%); }
-.thought-bubble { pointer-events: auto; }
-.dialogue-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
-.dialogue-heading .thought-name { margin: 0; text-transform: uppercase; }
-.dialogue-step { flex-shrink: 0; color: #4e6878; font-size: 12px; }
-.dialogue-navigation { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 16px; }
-.dialogue-navigation button { min-height: 44px; padding: 10px 14px; border-radius: 24px; font-size: 14px; cursor: pointer; }
-.dialogue-previous { border: 1px solid #91b4c7; background: transparent; color: #304f63; }
-.dialogue-previous:disabled { visibility: hidden; }
-.dialogue-next { border: 1px solid #304f63; background: #f5d65f; color: #304f63; font-weight: 700; }
-.dialogue-next:hover { background: #ffe58a; }
-@media (max-width: 640px) { .thought-both { left: 50%; } .dialogue-navigation { margin-top: 12px; } }
-@media (max-height: 540px) and (orientation: landscape) { .thought-bubble { max-height: 58%; overflow-y: auto; } }
+/* The two greetings stay together; the invitation waits for Continue. */
+.welcome-dialogues { position: absolute; top: 17%; left: 50%; transform: translateX(-50%); width: min(760px, calc(100% - 40px)); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; max-height: calc(83% - 100px); overflow-y: auto; padding: 0 0 22px; pointer-events: auto; }
+.welcome-dialogues .thought-bubble { position: relative; top: auto; left: auto; width: 100%; transform: none; animation: detail-reveal .3s ease both; }
+.welcome-dialogues .thought-name { text-transform: uppercase; }
+.welcome-dialogues .thought-text { margin: 0; overflow-wrap: anywhere; }
+.welcome-dialogues-joint { width: min(520px, calc(100% - 40px)); grid-template-columns: 1fr; }
+.thought-both { background: #fffbef; }
+@media (max-width: 640px) and (orientation: portrait) {
+  .welcome-dialogues { top: max(110px, 14%); width: min(360px, calc(100% - 40px)); grid-template-columns: 1fr; gap: 22px; max-height: calc(100% - 210px); }
+  .welcome-dialogues .thought-bubble { padding: 13px 16px; }
+}
+@media (max-height: 540px) and (orientation: landscape) { .welcome-dialogues { top: 28%; max-height: calc(72% - 90px); } }
+@media (prefers-reduced-motion: reduce) { .welcome-dialogues .thought-bubble { animation: none; } }
