@@ -66,13 +66,13 @@ const EVENT_DETAILS = [
     speaker: 'BARBARA',
     label: 'FECHA',
     value: 'Domingo 8 de noviembre',
-    detail: 'Reserva este día para celebrar juntos la llegada de Emiliano Noah.',
+    detail: 'Celebremos la llegada de Emiliano Noah.',
   },
   {
     speaker: 'LUIS',
     label: 'HORA',
     value: 'Desde las 3:00 p. m.',
-    detail: 'Te esperamos con mucha ilusión para compartir una tarde especial.',
+    detail: 'Una tarde para compartir juntos.',
   },
   {
     speaker: 'BARBARA',
@@ -229,14 +229,11 @@ function WelcomeSequence({ guestName, onActionChange, onContinue, leaving }) {
 
   return (
     <section className={`welcome-layer${leaving ? ' welcome-layer-leaving' : ''}`} inert={leaving} aria-label="Bienvenida de Barbara y Luis">
-      <p className="welcome-title">Invitación para {guestName || 'una persona especial'}</p>
+      <p className="welcome-title"><span>Invitación para</span><strong>{guestName || 'una persona especial'}</strong></p>
       <div className={`thought-bubble thought-${dialogue.speaker.toLowerCase()}`} role="status">
         <span className="thought-name">{dialogue.speaker}</span>
         <span className="thought-text">{revealedText}<span className="typing-cursor" aria-hidden="true">|</span></span>
       </div>
-      <p className={`welcome-hint ${readyToWalk ? 'welcome-hint-ready' : ''}`}>
-        {!readyToWalk && 'La bienvenida continuará automáticamente'}
-      </p>
       {!readyToWalk && <button className="welcome-skip" onClick={onContinue} type="button">Ver información del evento <span aria-hidden="true">→</span></button>}
       {readyToWalk && (
         <button className="continue-float" aria-label="Continuar" onClick={onContinue} type="button">

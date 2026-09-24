@@ -486,3 +486,37 @@ button:focus-visible, a:focus-visible { outline: 3px solid #304f63; outline-offs
 .sunshine-dedication > span { display: block; font: 600 11px/1.6 'Manrope', sans-serif; letter-spacing: .18em; text-transform: uppercase; }
 .sunshine-dedication > strong { display: block; margin-top: 2px; color: #947021; font: 600 clamp(28px, 5vw, 40px)/1.15 'Caveat', 'Segoe Print', cursive; letter-spacing: 0; text-wrap: balance; }
 @media (max-height: 650px) { .sunshine-dedication > strong { font-size: 27px; } }
+
+/* Keep copy readable over the 3D scene and reserve space for audio controls. */
+.welcome-title { top: max(14px, env(safe-area-inset-top)); left: 16px; transform: none; width: fit-content; max-width: min(600px, calc(100% - 88px)); padding: 10px 16px; border: 1px solid #c8dce5; border-radius: 18px; background: #fffbef; white-space: normal; overflow-wrap: anywhere; text-align: left; font-family: 'Manrope', sans-serif; font-size: clamp(15px, 2vw, 22px); line-height: 1.35; box-shadow: 0 3px 12px #304f6314; }
+.welcome-title span { display: block; font-size: 11px; font-weight: 600; letter-spacing: .06em; }
+.welcome-title strong { display: block; font-weight: 700; }
+.event-information, .garden-information { padding: 12px; border: 1px solid #c8dce5; border-radius: 18px; background: #fffbef; box-shadow: 0 5px 20px #304f6320; overscroll-behavior: contain; scrollbar-color: #91b4c7 #fffbef; }
+.event-heading, .garden-heading { margin-bottom: 10px; }
+.event-heading h1, .garden-heading h1 { line-height: 1.15; }
+.garden-heading { padding-right: 0; }
+.garden-instruction { margin-bottom: 8px; padding: 8px 10px; }
+.walk-caption { width: max-content; max-width: calc(100% - 32px); padding: 10px 16px; border-radius: 20px; background: #fffbef; text-align: center; }
+.welcome-skip { bottom: max(24px, env(safe-area-inset-bottom)); }
+@media (max-width: 640px) and (orientation: portrait) {
+  .event-information, .garden-information { top: max(12px, env(safe-area-inset-top)); left: 12px; width: calc(100% - 24px); padding: 10px; max-height: 48%; }
+  .event-heading, .garden-heading { padding-right: 50px; min-height: 42px; display: flex; flex-direction: column; justify-content: center; }
+  .event-heading h1, .garden-heading h1 { font-size: 30px; }
+  .event-heading p { font-size: 10px; margin-bottom: 2px; }
+  .garden-heading { margin-bottom: 6px; }
+  .garden-slot { min-height: 76px; padding: 8px 10px; gap: 3px; }
+  .garden-slot strong { font-size: 13px; }
+  .garden-slot > .garden-slot-time, .garden-slot .garden-slot-action { font-size: 11px; }
+  .garden-instruction { font-size: 12px; line-height: 1.35; }
+  .garden-activity p, .garden-refreshments { font-size: 12px; line-height: 1.4; }
+  .garden-refreshments { padding: 8px 10px; margin-top: 6px; }
+  .garden-refreshments strong { font-size: 12px; }
+  .event-card { padding: 10px; }
+  .event-card strong { font-size: 18px; }
+  .event-continue { max-width: calc(100% - 32px); }
+}
+@media (max-height: 540px) and (orientation: landscape) {
+  .garden-information { top: 12px; width: 42%; max-height: calc(100% - 24px); }
+  .welcome-title { max-width: 45%; padding: 8px 12px; }
+  .thought-bubble { top: 30%; }
+}

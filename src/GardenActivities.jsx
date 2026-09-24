@@ -15,10 +15,9 @@ export default function GardenActivities({ selected, onSelect, onGifts }) {
     <section className="garden-program" aria-labelledby="garden-heading">
       <div className="garden-information">
         <header className="garden-heading">
-          <p>EN EL JARDÍN · CON USTEDES</p>
-          <h1 id="garden-heading" tabIndex={-1} ref={heading}>Una tarde para recordar</h1>
+          <h1 id="garden-heading" tabIndex={-1} ref={heading}>Así celebraremos</h1>
         </header>
-        <p className="garden-instruction">Toca un evento y descubre qué haremos <span aria-hidden="true">↓</span></p>
+        <p className="garden-instruction">Elige y descubre cada momento <span aria-hidden="true">↓</span></p>
         <div className="garden-schedule" aria-label="Programa del evento">
           {GARDEN_PROGRAM.map((item, index) => (
             <button key={item.time} type="button" className={`garden-slot${selected === index ? ' is-selected' : ''}`} aria-pressed={selected === index} aria-controls="garden-activity" onClick={() => onSelect(index)}>
@@ -31,7 +30,7 @@ export default function GardenActivities({ selected, onSelect, onGifts }) {
         </div>
         <p className="garden-refreshments"><strong>Durante todo el evento</strong><span>Bebidas, comida y carritos de snacks para disfrutar en cualquier momento.</span></p>
       </div>
-      <button className="scene-next event-continue" onClick={onGifts} type="button">Ver regalos sugeridos <span aria-hidden="true">→</span></button>
+      <button className="scene-next event-continue" onClick={onGifts} type="button">Confirmar asistencia <span aria-hidden="true">→</span></button>
     </section>
   )
 }
