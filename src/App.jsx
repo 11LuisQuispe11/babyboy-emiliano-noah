@@ -32,32 +32,11 @@ function getGuestName() {
 }
 
 function getDialogue(guestName) {
+  const hello = guestName ? 'Hola ' + guestName : 'Hola'
   return [
-    {
-      speaker: 'BARBARA',
-      action: 'Standing Greeting',
-      text: `Hola${guestName ? ` ${guestName}` : ''}, soy Barbara. Queremos invitarte a nuestro Babyshower y nos encantaría contar con tu presencia.`,
-    },
-    {
-      speaker: 'LUIS',
-      action: 'Waving',
-      text: `Hola${guestName ? ` ${guestName}` : ''}, soy Luis. Nos haría muy felices compartir contigo este día tan especial.`,
-    },
-    {
-      speaker: 'BARBARA',
-      action: 'Idle',
-      text: 'Estamos preparando una reunión llena de cariño para celebrar la llegada de nuestro pequeño hijo Emiliano Noah.',
-    },
-    {
-      speaker: 'LUIS',
-      action: 'Idle',
-      text: 'Tu compañía hará que este momento sea todavía más especial. Queremos verte allí con nosotros.',
-    },
-    {
-      speaker: 'BARBARA',
-      action: 'Idle',
-      text: 'Cuando quieras, acompáñanos para conocer la fecha, el lugar y todos los detalles. ¡Esperamos contar contigo!',
-    },
+    { speaker: 'BARBARA', label: 'Barbara', action: 'Standing Greeting', text: hello + ', soy Barbara.' },
+    { speaker: 'LUIS', label: 'Luis', action: 'Waving', text: hello + ', soy Luis.' },
+    { speaker: 'BOTH', label: 'Barbara y Luis', action: 'Idle', text: 'Te invitamos al babyshower de Emiliano Noah. ¡Celebremos juntos su llegada! Nos encantaría contar contigo.' },
   ]
 }
 
@@ -194,52 +173,30 @@ function IntroScreen({ onComplete, assetsReady }) {
 function WelcomeSequence({ guestName, onActionChange, onContinue, leaving }) {
   const dialogueLines = useMemo(() => getDialogue(guestName), [guestName])
   const [dialogueIndex, setDialogueIndex] = useState(0)
-  const [revealedText, setRevealedText] = useState('')
-  const [readyToWalk, setReadyToWalk] = useState(false)
   const dialogue = dialogueLines[dialogueIndex]
+  const isLast = dialogueIndex === dialogueLines.length - 1
 
   useEffect(() => {
     if (leaving) return undefined
-    let characterIndex = 0
-    let nextDialogueTimer
-    setRevealedText('')
     onActionChange(dialogue.speaker, dialogue.action)
-
-    const typewriter = window.setInterval(() => {
-      characterIndex += 1
-      setRevealedText(dialogue.text.slice(0, characterIndex))
-      if (characterIndex >= dialogue.text.length) {
-        window.clearInterval(typewriter)
-        onActionChange(dialogue.speaker, 'Idle')
-        nextDialogueTimer = window.setTimeout(() => {
-          if (dialogueIndex >= dialogueLines.length - 1) {
-            setReadyToWalk(true)
-            return
-          }
-          setDialogueIndex((currentIndex) => currentIndex + 1)
-        }, 1200)
-      }
-    }, 32)
-
-    return () => {
-      window.clearInterval(typewriter)
-      window.clearTimeout(nextDialogueTimer)
-    }
-  }, [dialogue, dialogueIndex, dialogueLines.length, onActionChange, leaving])
+    const timer = window.setTimeout(() => onActionChange(dialogue.speaker, 'Idle'), 3000)
+    return () => window.clearTimeout(timer)
+  }, [dialogue, onActionChange, leaving])
 
   return (
     <section className={`welcome-layer${leaving ? ' welcome-layer-leaving' : ''}`} inert={leaving} aria-label="Bienvenida de Barbara y Luis">
       <p className="welcome-title"><span>Invitación para</span><strong>{guestName || 'una persona especial'}</strong></p>
-      <div className={`thought-bubble thought-${dialogue.speaker.toLowerCase()}`} role="status">
-        <span className="thought-name">{dialogue.speaker}</span>
-        <span className="thought-text">{revealedText}<span className="typing-cursor" aria-hidden="true">|</span></span>
+      <div className={`thought-bubble thought-${dialogue.speaker.toLowerCase()}`}>
+        <div role="status" aria-live="polite" aria-atomic="true">
+          <div className="dialogue-heading"><span className="thought-name">{dialogue.label}</span><span className="dialogue-step" aria-label={`Diálogo ${dialogueIndex + 1} de ${dialogueLines.length}`}>{dialogueIndex + 1} / {dialogueLines.length}</span></div>
+          <span className="thought-text">{dialogue.text}</span>
+        </div>
+        <nav className="dialogue-navigation" aria-label="Diálogos de bienvenida">
+          <button type="button" className="dialogue-previous" disabled={dialogueIndex === 0} onClick={() => setDialogueIndex(index => Math.max(0, index - 1))}>Anterior</button>
+          <button type="button" className="dialogue-next" onClick={() => isLast ? onContinue() : setDialogueIndex(index => Math.min(dialogueLines.length - 1, index + 1))}>{isLast ? 'Ver el evento' : 'Siguiente'} <span aria-hidden="true">→</span></button>
+        </nav>
       </div>
-      {!readyToWalk && <button className="welcome-skip" onClick={onContinue} type="button">Ver información del evento <span aria-hidden="true">→</span></button>}
-      {readyToWalk && (
-        <button className="continue-float" aria-label="Continuar" onClick={onContinue} type="button">
-          <span aria-hidden="true">-&gt;</span>
-        </button>
-      )}
+      {!isLast && <button className="welcome-skip" onClick={onContinue} type="button">Ver información del evento <span aria-hidden="true">→</span></button>}
     </section>
   )
 }
@@ -321,6 +278,11 @@ export default function App() {
   const [luisAction, setLuisAction] = useState('Idle')
 
   const handleDialogueAction = useCallback((speaker, action) => {
+    if (speaker === 'BOTH') {
+      setBarbaraAction(action)
+      setLuisAction(action)
+      return
+    }
     if (speaker === 'BARBARA') {
       setBarbaraAction(action)
       setLuisAction('Idle')
