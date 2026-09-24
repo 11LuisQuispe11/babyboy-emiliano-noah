@@ -15,7 +15,7 @@ import BackgroundMusic from './BackgroundMusic.jsx'
 import Attendance from './Attendance.jsx'
 import GiftRegistry from './GiftRegistry.jsx'
 import GardenActivities, { GARDEN_PROGRAM } from './GardenActivities.jsx'
-import { GARDEN_DURATIONS, GARDEN_POSITIONS, getGardenShot, hostsInGarden } from './gardenMotion.mjs'
+import { GARDEN_DURATIONS, getGardenShot, sunlightOpacity } from './gardenMotion.mjs'
 
 const MOBILE_RENDERING = shouldUseMobileAssets({ coarsePointer: window.matchMedia('(pointer: coarse)').matches, touchPoints: navigator.maxTouchPoints, screenWidth: window.screen.width, deviceMemory: navigator.deviceMemory, saveData: navigator.connection?.saveData })
 const SCENE_PATH = import.meta.env.BASE_URL + (MOBILE_RENDERING ? mobileAssets.scene : 'models/EscenarioV3.glb?v=046b5a70e2da7afe')
@@ -28,7 +28,7 @@ const INITIAL_SHOT = (PREVIEW_GARDEN || PREVIEW_GIFTS) ? getGardenShot('ready', 
 const MAP_URL = 'https://maps.app.goo.gl/uFatNXWL8boXHFGy6'
 
 function getGuestName() {
-  return invitationName(window.location.search) || 'Invitado'
+  return invitationName(window.location.search)
 }
 
 function getDialogue(guestName) {
@@ -36,12 +36,12 @@ function getDialogue(guestName) {
     {
       speaker: 'BARBARA',
       action: 'Standing Greeting',
-      text: `Hola ${guestName}, soy Barbara. Queremos invitarte a nuestro Babyshower y nos encantaría contar con tu presencia.`,
+      text: `Hola${guestName ? ` ${guestName}` : ''}, soy Barbara. Queremos invitarte a nuestro Babyshower y nos encantaría contar con tu presencia.`,
     },
     {
       speaker: 'LUIS',
       action: 'Waving',
-      text: `Hola ${guestName}, soy Luis. Nos haría muy felices compartir contigo este día tan especial.`,
+      text: `Hola${guestName ? ` ${guestName}` : ''}, soy Luis. Nos haría muy felices compartir contigo este día tan especial.`,
     },
     {
       speaker: 'BARBARA',
@@ -115,7 +115,7 @@ function RouteProgress({ routePhase, walkProgress, onArrive }) {
   return null
 }
 
-function CameraTransition({ routePhase, walkProgress, exploring, gardenPhase, gardenProgress, onGardenPhase }) {
+function CameraTransition({ routePhase, walkProgress, exploring, gardenPhase, gardenProgress, onGardenPhase, sunlightRef }) {
   const { camera, size } = useThree()
   const focus = useRef(new Vector3(...INITIAL_SHOT.target))
   const destination = useMemo(() => new Vector3(), [])
@@ -125,13 +125,14 @@ function CameraTransition({ routePhase, walkProgress, exploring, gardenPhase, ga
     if (gardenPhase !== 'idle') {
       const duration = GARDEN_DURATIONS[gardenPhase]
       if (duration) gardenProgress.current = Math.min(1, gardenProgress.current + Math.min(delta, 0.05) * 1000 / duration)
+      if (sunlightRef.current) sunlightRef.current.style.opacity = sunlightOpacity(gardenPhase, gardenProgress.current)
       const shot = getGardenShot(gardenPhase, gardenProgress.current, size.width <= 640 && size.height > size.width)
       camera.position.set(...shot.position)
       camera.lookAt(...shot.target)
       if (camera.fov !== shot.fov) { camera.fov = shot.fov; camera.updateProjectionMatrix() }
       if (duration && gardenProgress.current >= 1) {
         gardenProgress.current = 0
-        onGardenPhase(gardenPhase === 'travel' ? 'panorama' : gardenPhase === 'panorama' ? 'reveal' : 'ready')
+        onGardenPhase('ready')
       }
       return
     }
@@ -174,11 +175,11 @@ function IntroScreen({ onComplete, assetsReady }) {
   }, [ready, onComplete])
   return (
     <section className={`intro-screen invitation-loading${ready ? ' is-ready' : ''}`} aria-label="Preparando tu invitación">
-      <div className="loading-halo" aria-hidden="true" />
+      <div className="loading-halo" aria-hidden="true" /><div className="sunshine-arch" aria-hidden="true" /><span className="sun-cloud cloud-left" aria-hidden="true" /><span className="sun-cloud cloud-right" aria-hidden="true" />
       <div className="intro-content">
-        <p className="intro-kicker">UNA PEQUEÑA VIDA. UN AMOR INMENSO.</p>
-        <div className="loading-emblem" aria-hidden="true"><span className="loading-orbit" /><span className="loading-star">✦</span><span className="loading-monogram">en</span><span className="loading-spark">✧</span></div>
-        <p className="loading-dedication">Algo hermoso está por comenzar</p>
+        <p className="intro-kicker">NUESTRO PEQUEÑO RAYITO DE SOL</p>
+        <div className="loading-emblem sunshine-emblem" aria-hidden="true"><span>&#9728;</span></div>
+        <p className="loading-dedication">Un rayito de sol viene a iluminar nuestras vidas</p>
         <h1>Emiliano<span>Noah</span></h1>
         <p className="loading-signature">Con amor, Barbara y Luis</p>
         <div className="loading-status" role="status">{errors.length ? 'No pudimos preparar la invitación. Intenta nuevamente.' : ready ? 'Todo listo. Bienvenido a nuestra historia.' : 'Estamos preparando un lugar para ti…'}</div>
@@ -228,7 +229,7 @@ function WelcomeSequence({ guestName, onActionChange, onContinue, leaving }) {
 
   return (
     <section className={`welcome-layer${leaving ? ' welcome-layer-leaving' : ''}`} inert={leaving} aria-label="Bienvenida de Barbara y Luis">
-      <p className="welcome-title">Invitación para {guestName}</p>
+      <p className="welcome-title">Invitación para {guestName || 'una persona especial'}</p>
       <div className={`thought-bubble thought-${dialogue.speaker.toLowerCase()}`} role="status">
         <span className="thought-name">{dialogue.speaker}</span>
         <span className="thought-text">{revealedText}<span className="typing-cursor" aria-hidden="true">|</span></span>
@@ -312,8 +313,9 @@ export default function App() {
   const [infoScene, setInfoScene] = useState(PREVIEW_GIFTS ? 'attendance' : PREVIEW_GARDEN ? 'activities' : 'details')
   const [gardenPhase, setGardenPhase] = useState(PREVIEW_GARDEN || PREVIEW_GIFTS ? 'ready' : 'idle')
   const gardenProgress = useRef(0)
+  const sunlightRef = useRef(null)
   const [selectedActivity, setSelectedActivity] = useState(0)
-  const startGarden = useCallback(() => { gardenProgress.current = 0; setGardenPhase('travel'); setInfoScene('activities') }, [])
+  const startGarden = useCallback(() => { gardenProgress.current = 0; setGardenPhase('sunlight'); setInfoScene('activities') }, [])
   const [exploring, setExploring] = useState(false)
   const [danceBarbara, setDanceBarbara] = useState(false)
   const [danceLuis, setDanceLuis] = useState(false)
@@ -338,7 +340,7 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    document.title = `Invitación para ${guestName} | Babyshower de Emiliano Noah`
+    document.title = `Invitación para ${guestName || 'una persona especial'} | Babyshower de Emiliano Noah`
   }, [guestName])
 
   useEffect(() => {
@@ -390,7 +392,7 @@ export default function App() {
           </>}
           {!MOBILE_RENDERING && <Environment preset="studio" environmentIntensity={0.45} />}
         </Suspense>
-        <CameraTransition routePhase={routePhase} walkProgress={walkProgress} exploring={exploring} gardenPhase={gardenPhase} gardenProgress={gardenProgress} onGardenPhase={setGardenPhase} />
+        <CameraTransition routePhase={routePhase} walkProgress={walkProgress} exploring={exploring} gardenPhase={gardenPhase} gardenProgress={gardenProgress} onGardenPhase={setGardenPhase} sunlightRef={sunlightRef} />
         <ExploreCamera active={exploring} joystick={joystick} />
       </Canvas>
 
@@ -401,7 +403,7 @@ export default function App() {
       {routePhase === 'arrived' && gardenPhase === 'ready' && infoScene === 'activities' && <GardenActivities selected={selectedActivity} onSelect={setSelectedActivity} onGifts={() => setInfoScene('attendance')} />}
       {!exploring && routePhase === 'arrived' && infoScene === 'attendance' && <Attendance onBack={() => setInfoScene('activities')} onContinue={() => setInfoScene('gifts')} />}
       {!exploring && routePhase === 'arrived' && infoScene === 'gifts' && <GiftRegistry onBack={() => setInfoScene('attendance')} onExplore={() => { setDanceBarbara(false); setDanceLuis(false); setExploring(true) }} />}
-      {gardenPhase !== 'idle' && gardenPhase !== 'ready' && <div className="garden-journey" role="status">{gardenPhase === 'travel' ? 'Vamos al jardín…' : gardenPhase === 'panorama' ? 'Conoce el lugar donde celebraremos' : '¡Bienvenidos al jardín!'}</div>}
+      {gardenPhase === 'sunlight' && <div ref={sunlightRef} className="sunlight-transition" role="status" aria-label="Un rayito de sol nos lleva al jardín"><span className="transition-sun" aria-hidden="true">&#9728;</span><span className="sun-cloud cloud-left" aria-hidden="true" /><span className="sun-cloud cloud-right" aria-hidden="true" /><p>Un rayito de sol nos lleva al jardín…</p></div>}
       {exploring && <section className="explore-hud" aria-label="Exploración de La Hacienda Blanca"><span>Explora La Hacienda Blanca</span><div className="garden-play-controls"><button type="button" aria-pressed={danceLuis} onClick={() => setDanceLuis(value => !value)}>{danceLuis ? 'Detener a Luis' : 'Haz bailar a Luis'}</button><button type="button" aria-pressed={danceBarbara} onClick={() => setDanceBarbara(value => !value)}>{danceBarbara ? 'Detener a Barbara' : 'Haz bailar a Barbara'}</button><button type="button" onClick={() => { setJoystick({ x: 0, y: 0 }); setExploring(false) }}>Volver a los regalos</button></div><VirtualJoystick onMove={setJoystick} /></section>}
     </main>
   )
