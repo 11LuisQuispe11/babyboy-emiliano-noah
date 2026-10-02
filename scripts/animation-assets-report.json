@@ -29,11 +29,10 @@
   },
   "luis-desktop": {
     "before": 43294800,
-    "after": 42633220,
-    "saved": 661580,
+    "after": 42715176,
+    "saved": 579624,
     "removed": [
       "Turning",
-      "Thankful",
       "Talking_gesture",
       "Talking",
       "Pointing",
@@ -44,11 +43,10 @@
   },
   "luis-mobile": {
     "before": 3532580,
-    "after": 2924680,
-    "saved": 607900,
+    "after": 3006636,
+    "saved": 525944,
     "removed": [
       "Turning",
-      "Thankful",
       "Talking_gesture",
       "Talking",
       "Pointing",

@@ -45,19 +45,16 @@ const EVENT_DETAILS = [
     speaker: 'BARBARA',
     label: 'FECHA',
     value: 'Domingo 8 de noviembre',
-    detail: 'Celebremos la llegada de Emiliano Noah.',
   },
   {
     speaker: 'LUIS',
     label: 'HORA',
     value: 'Desde las 3:00 p. m.',
-    detail: 'Una tarde para compartir juntos.',
   },
   {
     speaker: 'BARBARA',
     label: 'LUGAR',
-    value: 'La Hacienda Blanca',
-    detail: 'Lurigancho-Chosica, Provincia de Lima.',
+    value: 'La Hacienda Blanca Lurigancho-Chosica',
   },
 ]
 
