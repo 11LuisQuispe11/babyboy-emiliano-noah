@@ -17,7 +17,7 @@ export default function Attendance({ onContinue, onBack }) {
   const pending = useRef(false)
   async function submit(event) {
     event.preventDefault()
-    if (!enabled || !validName || !['1', '2', '3', '4'].includes(people) || pending.current) return
+    if (!enabled || !validName || !['1', '2'].includes(people) || pending.current) return
     pending.current = true; setBusy(true); setError('')
     try {
       if (!requestId.current) {
@@ -41,9 +41,9 @@ export default function Attendance({ onContinue, onBack }) {
       {choosing && <div id="attendance-party">
         <label htmlFor="attendance-count">¿Cuántas personas asistirán?
           <select id="attendance-count" autoFocus value={people} onChange={e => setPeople(e.target.value)} disabled={busy}>
-            {[1, 2, 3, 4].map(count => <option key={count} value={count}>{count} {count === 1 ? 'persona' : 'personas'}</option>)}
+            {[1, 2].map(count => <option key={count} value={count}>{count} {count === 1 ? 'persona' : 'personas'}</option>)}
           </select>
-          <small>Inclúyete en el total. Puedes confirmar hasta 4 personas.</small>
+          <small>Inclúyete en el total. Puedes confirmar hasta 2 personas.</small>
         </label>
         {!enabled && <p className="registry-info">La confirmación estará disponible pronto. Mientras tanto, puedes ver las ideas de regalos.</p>}
         {error && <p className="registry-error" role="alert">{error}</p>}
